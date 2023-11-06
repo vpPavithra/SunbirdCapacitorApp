@@ -1,0 +1,12 @@
+{
+  "android": {
+    "release": {
+      "keystore": "sunbirdStaging.jks",
+      "storePassword": "Sunbird123*",
+      "alias": "testSunbird",
+      "password": "Sunbird123*",
+      "keystoreType": ""
+    }
+  }
+}
+

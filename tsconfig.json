@@ -1,33 +1,58 @@
 /* To learn more about this file see: https://angular.io/config/tsconfig. */
 {
   "compileOnSave": false,
+  "allowSyntheticDefaultImports": true,
   "compilerOptions": {
-    "baseUrl": "./",
+    "baseUrl": "./src",
     "outDir": "./dist/out-tsc",
-    "forceConsistentCasingInFileNames": true,
-    "strict": true,
-    "noImplicitOverride": true,
-    "noPropertyAccessFromIndexSignature": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
     "sourceMap": true,
     "declaration": false,
+    "resolveJsonModule": true,
     "downlevelIteration": true,
+    "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "moduleResolution": "node",
     "importHelpers": true,
-    "target": "es2022",
+    "target": "es2015",
     "module": "es2020",
+    "skipLibCheck": true,
     "lib": [
       "es2018", 
       "dom"
     ],
-    "useDefineForClassFields": false
+    "types": [
+      "node",
+      "reflect-metadata"
+    ],
+    "typeRoots": [
+      "./node_modules/@types"
+    ],
+    "paths": {
+      "@app/*": ["*"],
+      "sunbird-sdk": ["../node_modules/@project-sunbird/sunbird-sdk"],
+      "sunbird-sdk/*": ["../node_modules/@project-sunbird/sunbird-sdk/*"],
+      "@project-sunbird/common-consumption": ["../node_modules/@project-sunbird/common-consumption"],
+      "@project-sunbird/common-consumption/*": ["../node_modules/@project-sunbird/common-consumption/*"],
+      "common-form-elements": ["../node_modules/@project-sunbird/common-form-elements"],
+      "common-form-elements/*": ["../node_modules/@project-sunbird/common-form-elements/*"]
+    }
   },
+  "include": [
+    "src/**/*.ts",
+    "./typings/*.d.ts",
+    "./content-player/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "src/**/*.spec.ts",
+    "src/**/*.spec.data.ts",
+    "src/**/__tests__/*.ts"
+  ],
   "angularCompilerOptions": {
-    "enableI18nLegacyMessageIdFormat": false,
+    "enableIvy": true,
+    "compilationMode": "partial",
+    "fullTemplateTypeCheck": true, 
     "strictInjectionParameters": true,
-    "strictInputAccessModifiers": true,
-    "strictTemplates": true
+    "enableResourceInlining": true
   }
 }
