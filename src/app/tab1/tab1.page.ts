@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Platform } from '@ionic/angular';
 
 @Component({
   selector: 'app-tab1',
@@ -7,6 +8,16 @@ import { Component } from '@angular/core';
 })
 export class Tab1Page {
 
-  constructor() {}
+  constructor(private platform: Platform) {
+    this.initialisePlatformReady();
+  }
+
+  async initialisePlatformReady() {
+    await this.platform.ready().then((src) => {
+      console.log("******* platform ready ", src);
+    }).catch(err => {
+      console.log("error on platform ready ");
+    })
+  }
 
 }
