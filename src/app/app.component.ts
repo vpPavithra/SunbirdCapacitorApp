@@ -210,7 +210,7 @@ export class AppComponent implements OnInit, AfterViewInit {
       this.handleAuthErrors();
       this.preferences.putString(PreferenceKey.CONTENT_CONTEXT, '').subscribe();
       window['thisRef'] = this;
-      await StatusBar.setStyle({style: Style.Dark});
+      await StatusBar.setStyle({style: Style.Light});
       if (this.platform.is('ios')) {
         await StatusBar.setStyle({style: Style.Default});
         if (window['Keyboard']) {
@@ -624,11 +624,12 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   private generateNetworkTelemetry() {
-    const value = new Map();
-    Network.getStatus().then(value => {
-      value['network-type'] = value.connectionType});
-    this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
-      InteractSubtype.NETWORK_STATUS, Environment.HOME, PageId.SPLASH_SCREEN, undefined, value);
+    Network.getStatus().then(val => {
+      const value = new Map();
+      value['network-type'] = val.connectionType;
+      this.telemetryGeneratorService.generateInteractTelemetry(InteractType.OTHER,
+        InteractSubtype.NETWORK_STATUS, Environment.HOME, PageId.SPLASH_SCREEN, undefined, value);
+    });
   }
 
   private subscribeEvents() {
@@ -953,7 +954,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         break;
 
       case 'UPDATE':
-        cordova['plugins'].InAppUpdateManager.checkForImmediateUpdate(
+        window.cordova['plugins'].InAppUpdateManager.checkForImmediateUpdate(
           () => { },
           () => { }
         );

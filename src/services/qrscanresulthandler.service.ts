@@ -37,7 +37,7 @@ import { NavigationService } from './navigation-handler.service';
 import { FormConstants } from '../app/form.constants';
 import { CertificateVerificationPopoverComponent } from '../app/components/popups/certificate-verification/certificate-verification-popup.component';
 
-declare var cordova;
+declare var window;
 
 @Injectable()
 export class QRScannerResultHandler {
@@ -210,7 +210,7 @@ export class QRScannerResultHandler {
     });
     this.telemetryService.buildContext().subscribe(context => {
       scannedData = scannedData + '?clientId=android&context=' + encodeURIComponent(JSON.stringify(context));
-      this.inAppBrowserRef = cordova.InAppBrowser.open(scannedData, '_blank', 'zoom=no');
+      this.inAppBrowserRef = window.cordova.InAppBrowser.open(scannedData, '_blank', 'zoom=no');
       this.inAppBrowserRef.addEventListener('loadstart', (event) => {
         if (event.url) {
           if (event.url.includes('explore-course')) {

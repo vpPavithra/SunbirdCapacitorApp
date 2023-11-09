@@ -3,33 +3,32 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
-// import { ApplicationHeaderComponent } from './application-header/application-header.component';
-// import { ApplicationHeaderKebabMenuComponent } from './application-header/application-header-kebab-menu.component';
+import { ApplicationHeaderComponent } from './application-header/application-header.component';
+import { ApplicationHeaderKebabMenuComponent } from './application-header/application-header-kebab-menu.component';
 import { SignInCardComponent } from './sign-in-card/sign-in-card.component';
 import { PipesModule } from '../../pipes/pipes.module';
-// import { PbHorizontalComponent } from './pb-horizontal/pb-horizontal.component';
+import { PbHorizontalComponent } from './pb-horizontal/pb-horizontal.component';
 import { SbGenericPopoverComponent } from './popups/sb-generic-popover/sb-generic-popover.component';
 import { SbNoNetworkPopupComponent } from './popups/sb-no-network-popup/sb-no-network-popup.component';
 import { SbPopoverComponent } from './popups/sb-popover/sb-popover.component';
-// import { CollectionChildComponent } from './collection-child/collection-child.component';
-// import { ContentActionsComponent } from './content-actions/content-actions.component';
+import { CollectionChildComponent } from './collection-child/collection-child.component';
+import { ContentActionsComponent } from './content-actions/content-actions.component';
 import { IonicRatingModule } from 'ionic4-rating';
-// import { ContentRatingAlertComponent } from './content-rating-alert/content-rating-alert.component';
-// import { DetailCardComponent } from './detail-card/detail-card.component';
+import { ContentRatingAlertComponent } from './content-rating-alert/content-rating-alert.component';
+import { DetailCardComponent } from './detail-card/detail-card.component';
 import { FileSizePipe } from '../../pipes/file-size/file-size';
 import { DialogPopupComponent } from './popups/dialog-popup/dialog-popup.component';
 import { SbDownloadPopupComponent } from './popups/sb-download-popup/sb-download-popup.component';
 import { UpgradePopoverComponent } from './popups/upgrade-popover/upgrade-popover.component';
 import { EditContactDetailsPopupComponent } from './popups/edit-contact-details-popup/edit-contact-details-popup.component';
 import { EditContactVerifyPopupComponent } from './popups/edit-contact-verify-popup/edit-contact-verify-popup.component';
-// import { Keyboard } from '@awesome-cordova-plugins/keyboard/ngx';
-// import { ConfirmAlertComponent } from './confirm-alert/confirm-alert.component';
-// import { AppRatingAlertComponent } from './rating-alert/rating-alert.component';
-// import { OverflowMenuComponent } from '../profile/overflow-menu/overflow-menu.component';
-// import { ProfileAvatarComponent } from './profile-avatar/profile-avatar.component';
-// import { NotificationItemComponent } from './notification-item/notification-item.component';
-// import { SkeletonItemComponent } from './skeleton-item/skeleton-item.component';
-// import { FilteroptionComponent } from './filteroption/filteroption.component';
+import { ConfirmAlertComponent } from './confirm-alert/confirm-alert.component';
+import { AppRatingAlertComponent } from './rating-alert/rating-alert.component';
+import { OverflowMenuComponent } from '../profile/overflow-menu/overflow-menu.component';
+import { ProfileAvatarComponent } from './profile-avatar/profile-avatar.component';
+import { NotificationItemComponent } from './notification-item/notification-item.component';
+import { SkeletonItemComponent } from './skeleton-item/skeleton-item.component';
+import { FilteroptionComponent } from './filteroption/filteroption.component';
 import { EnrollmentDetailsComponent } from './enrollment-details/enrollment-details.component';
 import { ViewCreditsComponent } from './popups/view-credits/view-credits.component';
 import { SbInsufficientStoragePopupComponent } from './popups/sb-insufficient-storage-popup/sb-insufficient-storage-popup';
@@ -46,13 +45,13 @@ import { CommonFormsComponent } from './common-forms/common-forms.component';
 import { SbTutorialPopupComponent } from './popups/sb-tutorial-popup/sb-tutorial-popup.component';
 import { SbGenericFormPopoverComponent } from './popups/sb-generic-form-popover/sb-generic-form-popover.component';
 import { CourseCompletionPopoverComponent } from './popups/sb-course-completion-popup/sb-course-completion-popup.component';
-// import { CollectionActionsComponent } from './collection-acions/collection-acions.component';
-// import { CommonConsumptionModule } from '@project-sunbird/common-consumption';
-// import { SupportAcknowledgement } from './support-acknowledgement/support-acknowledgement.component';
-// import { AcknowledgeResponseComponent } from './acknowledge-response/acknowledge-response.component';
-// import { ExploreBooksSortComponent } from '../resources/explore-books-sort/explore-books-sort.component';
-// import { AddActivityToGroupComponent } from './add-activity-to-group/add-activity-to-group.component';
-// import { LicenseCardComponentComponent } from '../../app/components/license-card-component/license-card-component.component';
+import { CollectionActionsComponent } from './collection-acions/collection-acions.component';
+import { CommonConsumptionModule } from '@project-sunbird/common-consumption';
+import { SupportAcknowledgement } from './support-acknowledgement/support-acknowledgement.component';
+import { AcknowledgeResponseComponent } from './acknowledge-response/acknowledge-response.component';
+import { ExploreBooksSortComponent } from '../resources/explore-books-sort/explore-books-sort.component';
+import { AddActivityToGroupComponent } from './add-activity-to-group/add-activity-to-group.component';
+import { LicenseCardComponentComponent } from '../../app/components/license-card-component/license-card-component.component';
 import { ConsentPiiPopupComponent } from './popups/consent-pii-popup/consent-pii-popup.component';
 import { GroupGuideLinesPopoverComponent } from './popups/group-guidelines-popup/group-guidelines-popup.component';
 import {
@@ -60,31 +59,30 @@ import {
 } from './popups/sb-profile-name-confirmation-popup/sb-profile-name-confirmation-popup.component';
 import { CopyTraceIdPopoverComponent } from './popups/copy-trace-id-popup.ts/copy-trace-id-popup.component';
 import { SbSubjectListPopupComponent } from './popups/sb-subject-list-popup/sb-subject-list-popup.component';
-// import { DiscoverComponent } from './discover/discover.page';
+import { DiscoverComponent } from './discover/discover.page';
 import { AccessDiscussionComponent } from './access-discussion/access-discussion.component';
-// import { ShowVendorAppsComponent} from '../../app/components/show-vendor-apps/show-vendor-apps.component';
+import { ShowVendorAppsComponent} from '../../app/components/show-vendor-apps/show-vendor-apps.component';
 import {JoyfulThemePopupComponent} from './popups/joyful-theme-popup/joyful-theme-popup.component';
 import {NewExperiencePopupComponent} from './popups/new-experience-popup/new-experience-popup.component';
 import {YearOfBirthPopupComponent} from './popups/year-of-birth-popup/year-of-birth-popup.component';
-// import { ContentViewerComponent } from './content-viewer/content-viewer.component';
-// import { ScreenOrientation } from '@awesome-cordova-plugins/screen-orientation/ngx';
-// import { DashboardComponent } from './dashboard/dashboard.component';
-// import {DashletModule} from '@project-sunbird/sb-dashlet';
-// import { TocHeaderComponent } from './toc-header/toc-header.component';
-// import {RelevantContentCardComponent} from './relevant-content-card/relevant-content-card.component';
+import { ContentViewerComponent } from './content-viewer/content-viewer.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
+import {DashletModule} from '@project-sunbird/sb-dashlet';
+import { TocHeaderComponent } from './toc-header/toc-header.component';
+import {RelevantContentCardComponent} from './relevant-content-card/relevant-content-card.component';
 import { SbPreferencePopupComponent } from './popups/sb-preferences-popup/sb-preferences-popup.component';
 
 import { QrScannerIOSComponent } from './qr-scanner-ios/qr-scanner-ios.component';
 import { ContentShareHandlerService } from '../../services/content/content-share-handler.service';
-// import { ShowCertificateComponent } from './show-certificate-component/show-certificate-component.component';
+import { ShowCertificateComponent } from './show-certificate-component/show-certificate-component.component';
 import { CertificateVerificationPopoverComponent } from './popups/certificate-verification/certificate-verification-popup.component';
 import { DownloadTranscriptPopupComponent } from './popups/download-transcript-popup/download-transcript-popup.component';
 @NgModule({
     declarations: [
-        // ApplicationHeaderComponent,
-        // ApplicationHeaderKebabMenuComponent,
+        ApplicationHeaderComponent,
+        ApplicationHeaderKebabMenuComponent,
         SignInCardComponent,
-        // PbHorizontalComponent,
+        PbHorizontalComponent,
         SbGenericPopoverComponent,
         SbPopoverComponent,
         SbNoNetworkPopupComponent,
@@ -93,18 +91,18 @@ import { DownloadTranscriptPopupComponent } from './popups/download-transcript-p
         UpgradePopoverComponent,
         EditContactDetailsPopupComponent,
         EditContactVerifyPopupComponent,
-        // CollectionChildComponent,
-        // ContentActionsComponent,
-        // ContentRatingAlertComponent,
-        // DetailCardComponent,
-        // ConfirmAlertComponent,
-        // AppRatingAlertComponent,
-        // OverflowMenuComponent,
-        // ProfileAvatarComponent,
-        // NotificationItemComponent,
+        CollectionChildComponent,
+        ContentActionsComponent,
+        ContentRatingAlertComponent,
+        DetailCardComponent,
+        ConfirmAlertComponent,
+        AppRatingAlertComponent,
+        OverflowMenuComponent,
+        ProfileAvatarComponent,
+        NotificationItemComponent,
         ViewCreditsComponent,
-        // SkeletonItemComponent,
-        // FilteroptionComponent,
+        SkeletonItemComponent,
+        FilteroptionComponent,
         EnrollmentDetailsComponent,
         SbInsufficientStoragePopupComponent,
         AccountRecoveryInfoComponent,
@@ -113,37 +111,37 @@ import { DownloadTranscriptPopupComponent } from './popups/download-transcript-p
         SbAppSharePopupComponent,
         ImportPopoverComponent,
         SbProgressLoaderPage,
-        // CollectionActionsComponent,
+        CollectionActionsComponent,
         MyGroupsPopoverComponent,
         ToastNavigationComponent,
         CommonFormsComponent,
         SbTutorialPopupComponent,
         SbGenericFormPopoverComponent,
         CourseCompletionPopoverComponent,
-        // SupportAcknowledgement,
-        // AcknowledgeResponseComponent,
-        // ExploreBooksSortComponent,
-        // AddActivityToGroupComponent,
-        // LicenseCardComponentComponent,
+        SupportAcknowledgement,
+        AcknowledgeResponseComponent,
+        ExploreBooksSortComponent,
+        AddActivityToGroupComponent,
+        LicenseCardComponentComponent,
         ConsentPiiPopupComponent,
         GroupGuideLinesPopoverComponent,
         ProfileNameConfirmationPopoverComponent,
         CopyTraceIdPopoverComponent,
         SbSubjectListPopupComponent,
-        // DiscoverComponent,
+        DiscoverComponent,
         AccessDiscussionComponent,
-        // ShowVendorAppsComponent,
+        ShowVendorAppsComponent,
         JoyfulThemePopupComponent,
         JoyfulThemePopupComponent,
         NewExperiencePopupComponent,
         YearOfBirthPopupComponent,
-        // ContentViewerComponent,
-        // DashboardComponent,
-        // TocHeaderComponent,
-        // RelevantContentCardComponent,
+        ContentViewerComponent,
+        DashboardComponent,
+        TocHeaderComponent,
+        RelevantContentCardComponent,
         SbPreferencePopupComponent,
         QrScannerIOSComponent,
-        // ShowCertificateComponent,
+        ShowCertificateComponent,
         CertificateVerificationPopoverComponent,
         DownloadTranscriptPopupComponent
     ],
@@ -154,35 +152,35 @@ import { DownloadTranscriptPopupComponent } from './popups/download-transcript-p
         IonicModule,
         ReactiveFormsModule,
         PipesModule,
-        // CommonConsumptionModule,
+        CommonConsumptionModule,
         IonicRatingModule,
-        // DashletModule,
+        DashletModule,
         TranslateModule.forChild(),
     ],
     exports: [
-        // ApplicationHeaderComponent,
-        // ApplicationHeaderKebabMenuComponent,
+        ApplicationHeaderComponent,
+        ApplicationHeaderKebabMenuComponent,
         SignInCardComponent,
-        // PbHorizontalComponent,
+        PbHorizontalComponent,
         SbGenericPopoverComponent,
         SbPopoverComponent,
         SbNoNetworkPopupComponent,
-        // CollectionChildComponent,
-        // ContentActionsComponent,
-        // ContentRatingAlertComponent,
-        // DetailCardComponent,
+        CollectionChildComponent,
+        ContentActionsComponent,
+        ContentRatingAlertComponent,
+        DetailCardComponent,
         DialogPopupComponent,
         SbDownloadPopupComponent,
         UpgradePopoverComponent,
         EditContactDetailsPopupComponent,
-        // ConfirmAlertComponent,
+        ConfirmAlertComponent,
         EditContactVerifyPopupComponent,
-        // AppRatingAlertComponent,
-        // ProfileAvatarComponent,
-        // NotificationItemComponent,
+        AppRatingAlertComponent,
+        ProfileAvatarComponent,
+        NotificationItemComponent,
         ViewCreditsComponent,
-        // SkeletonItemComponent,
-        // FilteroptionComponent,
+        SkeletonItemComponent,
+        FilteroptionComponent,
         SbInsufficientStoragePopupComponent,
         AccountRecoveryInfoComponent,
         EnrollmentDetailsComponent,
@@ -191,44 +189,42 @@ import { DownloadTranscriptPopupComponent } from './popups/download-transcript-p
         SbAppSharePopupComponent,
         ImportPopoverComponent,
         SbProgressLoaderPage,
-        // CollectionActionsComponent,
+        CollectionActionsComponent,
         MyGroupsPopoverComponent,
         ToastNavigationComponent,
         CommonFormsComponent,
         SbTutorialPopupComponent,
         SbGenericFormPopoverComponent,
         CourseCompletionPopoverComponent,
-        // SupportAcknowledgement,
-        // AcknowledgeResponseComponent,
-        // ExploreBooksSortComponent,
-        // AddActivityToGroupComponent,
+        SupportAcknowledgement,
+        AcknowledgeResponseComponent,
+        ExploreBooksSortComponent,
+        AddActivityToGroupComponent,
         ConsentPiiPopupComponent,
-        // LicenseCardComponentComponent,
+        LicenseCardComponentComponent,
         GroupGuideLinesPopoverComponent,
         ProfileNameConfirmationPopoverComponent,
         CopyTraceIdPopoverComponent,
         SbSubjectListPopupComponent,
-        // DiscoverComponent,
+        DiscoverComponent,
         JoyfulThemePopupComponent,
         AccessDiscussionComponent,
-        // ShowVendorAppsComponent,
+        ShowVendorAppsComponent,
         NewExperiencePopupComponent,
         YearOfBirthPopupComponent,
-        // ContentViewerComponent,
-        // DashboardComponent,
-        // TocHeaderComponent,
-        // RelevantContentCardComponent,
+        ContentViewerComponent,
+        DashboardComponent,
+        TocHeaderComponent,
+        RelevantContentCardComponent,
         SbPreferencePopupComponent,
         QrScannerIOSComponent,
-        // ShowCertificateComponent,
+        ShowCertificateComponent,
         CertificateVerificationPopoverComponent,
         DownloadTranscriptPopupComponent
     ],
     providers: [
         FileSizePipe, 
         FilterPipe, 
-        // Keyboard, 
-        // ScreenOrientation, 
         ContentShareHandlerService
     ],
     schemas: [

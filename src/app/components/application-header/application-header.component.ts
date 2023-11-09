@@ -34,7 +34,7 @@ import { AppHeaderService } from '../../../services/app-header.service';
 import { buildConfig } from '../../../environments/environment.stag';
 import { ToastNavigationComponent } from '../popups/toast-navigation/toast-navigation.component';
 
-declare const cordova;
+declare const window;
 
 @Component({
   selector: 'app-application-header',
@@ -177,20 +177,20 @@ export class ApplicationHeaderComponent implements OnInit, OnDestroy {
   }
 
   private setAppVersion(): any {
-    // this.utilityService.getBuildConfigValue(GenericAppConfig.VERSION_NAME)
-    //   .then(vName => {
-    //     this.versionName = vName;
-    //     this.utilityService.getBuildConfigValue(GenericAppConfig.VERSION_CODE)
-    //       .then(vCode => {
-    //         this.versionCode = vCode;
-    //       })
-    //       .catch(error => {
-    //         console.error('Error in getting app version code', error);
-    //       });
-    //   })
-    //   .catch(error => {
-    //     console.error('Error in getting app version name', error);
-    //   });
+    this.utilityService.getBuildConfigValue(GenericAppConfig.VERSION_NAME)
+    .then(vName => {
+      this.versionName = vName;
+      this.utilityService.getBuildConfigValue(GenericAppConfig.VERSION_CODE)
+        .then(vCode => {
+          this.versionCode = vCode;
+        })
+        .catch(error => {
+          console.error('Error in getting app version code', error);
+        });
+    })
+    .catch(error => {
+      console.error('Error in getting app version name', error);
+    });
 
     let config = buildConfig;
     this.versionName = config.VERSION_NAME
@@ -213,9 +213,9 @@ export class ApplicationHeaderComponent implements OnInit, OnDestroy {
     combineLatest([
       this.downloadService.getActiveDownloadRequests(),
       this.eventsBusService.events(EventNamespace.DOWNLOADS).pipe(
-        filter((event) => event.type === DownloadEventType.PROGRESS)
+        filter((event: any) => event.type === DownloadEventType.PROGRESS)
       )
-    ]).subscribe(([list, event]) => {
+    ]).subscribe(([list, event]: any) => {
       const downloadEvent = event as DownloadProgress;
       this.downloadProgressMap[downloadEvent.payload.identifier] = downloadEvent.payload.progress;
 
@@ -333,7 +333,7 @@ export class ApplicationHeaderComponent implements OnInit, OnDestroy {
         from: CachedItemRequestSourceFrom.CACHE,
         requiredFields: ProfileConstants.REQUIRED_FIELDS
       }).pipe(
-        map(profiles => {
+        map((profiles: any) => {
           return profiles.filter(p => p.id !== this.profile.uid);
         })
       );
@@ -480,35 +480,35 @@ export class ApplicationHeaderComponent implements OnInit, OnDestroy {
 
   async switchTabs() {
     this.currentSelectedTabs = await this.preference.getString(PreferenceKey.SELECTED_SWITCHABLE_TABS_CONFIG).toPromise();
-    // let subType = InteractSubtype.OPTED_IN;
+    let subType = InteractSubtype.OPTED_IN;
     if (this.currentSelectedTabs === SwitchableTabsConfig.HOME_DISCOVER_TABS_CONFIG) {
       await this.preference.putString(PreferenceKey.SELECTED_SWITCHABLE_TABS_CONFIG,
         SwitchableTabsConfig.RESOURCE_COURSE_TABS_CONFIG).toPromise();
       this.events.publish('UPDATE_TABS', { type: 'SWITCH_TABS_USERTYPE' });
-      // subType = InteractSubtype.OPTED_OUT;
+      subType = InteractSubtype.OPTED_OUT;
     } else if (!this.currentSelectedTabs || this.currentSelectedTabs === SwitchableTabsConfig.RESOURCE_COURSE_TABS_CONFIG) {
       await this.preference.putString(PreferenceKey.SELECTED_SWITCHABLE_TABS_CONFIG,
         SwitchableTabsConfig.HOME_DISCOVER_TABS_CONFIG).toPromise();
       this.events.publish('UPDATE_TABS', { type: 'SWITCH_TABS_USERTYPE' });
-      // subType = InteractSubtype.OPTED_IN;
+      subType = InteractSubtype.OPTED_IN;
     }
     const userType = await this.preference.getString(PreferenceKey.SELECTED_USER_TYPE).toPromise();
     const isNewUser = await this.preference.getBoolean(PreferenceKey.IS_NEW_USER).toPromise();
-    // this.telemetryGeneratorService.generateNewExprienceSwitchTelemetry(
-    //   PageId.MENU,
-    //   subType,
-    //     {
-    //         userType,
-    //         isNewUser
-    //     }
-    // );
-    // await this.commonUtilService.populateGlobalCData();
+    this.telemetryGeneratorService.generateNewExprienceSwitchTelemetry(
+      PageId.MENU,
+      subType,
+        {
+            userType,
+            isNewUser
+        }
+    );
+    await this.commonUtilService.populateGlobalCData();
     await this.menuCtrl.close();
   }
 
   private async checkForAppUpdate() {
     return new Promise<void>((resolve => {
-      cordova.plugins.InAppUpdateManager.isUpdateAvailable((result: string) => {
+      window.cordova.plugins.InAppUpdateManager.isUpdateAvailable((result: string) => {
         if (result) {
           this.isUpdateAvailable = true;
           resolve();
@@ -536,7 +536,7 @@ export class ApplicationHeaderComponent implements OnInit, OnDestroy {
 
   private refreshLoginInButton() {
     const profileType = this.appGlobalService.getGuestUserType();
-    // this.showLoginButton = this.commonUtilService.isAccessibleForNonStudentRole(profileType);
+    this.showLoginButton = this.commonUtilService.isAccessibleForNonStudentRole(profileType);
   }
 
   private async checkCurrentOrientation() {

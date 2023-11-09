@@ -41,13 +41,13 @@ import { ContainerService } from '../services/container.services';
 import { UtilityService } from '../services/utility-service';
 import { AppHeaderService } from '../services/app-header.service';
 import { AppRatingService } from '../services/app-rating.service';
-// import { CollectionService } from '../services/collection.service';
+import { CollectionService } from '../services/collection.service';
 // import { AndroidPermissionsService } from '../services/android-permissions/android-permissions.service';
 import { ComingSoonMessageService } from '../services/coming-soon-message.service';
 import { ActivePageService } from '../services/active-page/active-page-service';
 import { CanvasPlayerService } from '../services/canvas-player.service';
 // import { SplashScreenService } from '../services/splash-screen.service';
-// import { GroupHandlerService } from '../services/group/group-handler.service';
+import { GroupHandlerService } from '../services/group/group-handler.service';
 import { ContentAggregatorHandler } from '../services/content/content-aggregator-handler.service';
 import { NotificationService } from '../services/notification.service';
 import { TncUpdateHandlerService } from '../services/handlers/tnc-update-handler.service';
@@ -61,15 +61,15 @@ import { ExternalIdVerificationService } from '../services/externalid-verificati
 import { NavigationService } from '../services/navigation-handler.service';
 import {ConsentService} from '../services/consent-service';
 import { ProfileHandler } from '../services/profile-handler';
-// import { DownloadPdfService } from '../services/download-pdf/download-pdf.service';
+import { DownloadPdfService } from '../services/download-pdf/download-pdf.service';
 import { LocationHandler } from '../services/location-handler';
 import { DiscussionTelemetryService } from '../services/discussion/discussion-telemetry.service';
-// import { CrashAnalyticsErrorLogger } from '../services/crash-analytics/crash-analytics-error-logger';
-// import { PrintPdfService } from '../services/print-pdf/print-pdf.service';
-// import {UpdateProfileService} from '../services/update-profile-service';
+import { CrashAnalyticsErrorLogger } from '../services/crash-analytics/crash-analytics-error-logger';
+import { PrintPdfService } from '../services/print-pdf/print-pdf.service';
+import {UpdateProfileService} from '../services/update-profile-service';
 import { OnboardingConfigurationService } from '../services/onboarding-configuration.service';
 import {LoginNavigationHandlerService} from '../services/login-navigation-handler.service';
-// import { StoragePermissionHandlerService } from '../services/storage-permission/storage-permission-handler.service';
+import { StoragePermissionHandlerService } from '../services/storage-permission/storage-permission-handler.service';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -78,15 +78,15 @@ import { IonicStorageModule } from '@ionic/storage';
 import { environment } from 'environments/environment';
 // Components
 import { ComponentsModule } from './components/components.module';
-// import { PageFilterOptionsPageModule } from './page-filter/page-filter-options/page-filter-options.module';
-// import { PageFilterPageModule } from './page-filter/page-filter.module';
+import { PageFilterOptionsPageModule } from './page-filter/page-filter-options/page-filter-options.module';
+import { PageFilterPageModule } from './page-filter/page-filter.module';
 import { TermsAndConditionsPageModule } from './terms-and-conditions/terms-and-conditions.module';
 import { TextbookTocService } from '../app/collection-detail-etb/textbook-toc-service';
 import {AliasBoardName} from '../pipes/alias-board-name/alias-board-name';
 // import {configuration} from '../configuration/configuration';
 // import { CoreModule } from './manage-learn/core/core.module';
 import { UserTypeSelectionPageModule } from './user-type-selection/user-type-selection.module';
-// import { SbSearchFilterModule } from 'common-form-elements';
+import { SbSearchFilterModule } from 'common-form-elements';
 import { TranslateJsonPipe } from '../pipes/translate-json/translate-json';
 import onboarding from './../assets/configurations/config.json';
 // AoT requires an exported function for factories
@@ -513,12 +513,12 @@ declare const sbutility;
         DirectivesModule,
         // custom modules=
         UserTypeSelectionPageModule,
-        // PageFilterPageModule,
-        // PageFilterOptionsPageModule,
+        PageFilterPageModule,
+        PageFilterOptionsPageModule,
         TermsAndConditionsPageModule,
         IonicStorageModule.forRoot(),
         // CoreModule,
-        // SbSearchFilterModule.forRoot('mobile'),
+        SbSearchFilterModule.forRoot('mobile'),
     ],
     providers: [
         // WebView,
@@ -541,9 +541,9 @@ declare const sbutility;
         AppHeaderService,
         AppRatingService,
         FormAndFrameworkUtilService,
-        // DownloadPdfService,
-        // PrintPdfService,
-        // CollectionService,
+        DownloadPdfService,
+        PrintPdfService,
+        CollectionService,
         // Device,
         // AndroidPermissionsService,
         ComingSoonMessageService,
@@ -555,7 +555,7 @@ declare const sbutility;
         // SplashScreenService,
         ExternalIdVerificationService,
         TextbookTocService,
-        // GroupHandlerService,
+        GroupHandlerService,
         // NativePageTransitions,
         NavigationService,
         ContentAggregatorHandler,
@@ -564,15 +564,15 @@ declare const sbutility;
         ProfileHandler,
         LocationHandler,
         DiscussionTelemetryService,
-        // UpdateProfileService,
+        UpdateProfileService,
         SegmentationTagService,
         LoginNavigationHandlerService,
         // GooglePlus,
-        // StoragePermissionHandlerService,
+        StoragePermissionHandlerService,
         OnboardingConfigurationService,
         { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
         ...sunbirdSdkServicesProvidersFactory(),
-        // { provide: ErrorHandler, useClass: CrashAnalyticsErrorLogger },
+        { provide: ErrorHandler, useClass: CrashAnalyticsErrorLogger },
         { provide: APP_INITIALIZER, useFactory: sunbirdSdkFactory, deps: [], multi: true },
         // Camera,
         // FilePath,

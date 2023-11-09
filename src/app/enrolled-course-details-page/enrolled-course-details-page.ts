@@ -47,7 +47,9 @@ import {
   PreferenceKey, ProfileConstants, RouterLinks, ShareItemType
 } from '../app.constant';
 import { SbGenericPopoverComponent } from '../components/popups/sb-generic-popover/sb-generic-popover.component';
-// import { ConfirmAlertComponent, ContentActionsComponent, ContentRatingAlertComponent } from '../components';
+import { ConfirmAlertComponent } from '../components/confirm-alert/confirm-alert.component';
+import { ContentActionsComponent } from '../components/content-actions/content-actions.component';
+import { ContentRatingAlertComponent } from '../components/content-rating-alert/content-rating-alert.component';
 import { NavigationExtras, Router } from '@angular/router';
 import { ContentUtil } from '../../util/content-util';
 import { SbPopoverComponent } from '../components/popups/sb-popover/sb-popover.component';
@@ -72,9 +74,9 @@ import { TagPrefixConstants } from '../../services/segmentation-tag/segmentation
 import { AccessDiscussionComponent } from '../../app/components/access-discussion/access-discussion.component';
 import { buildConfig } from '../../environments/environment.stag';
 // import { ActivityData } from '../my-groups/group.interface';
-
-declare const cordova;
-declare const window;
+import dayjs from 'dayjs';
+import { Directory } from '@capacitor/filesystem';
+declare const window: any;
 
 @Component({
   selector: 'app-enrolled-course-details-page',
@@ -530,23 +532,23 @@ export class EnrolledCourseDetailsPage implements OnInit, OnDestroy, ConsentPopo
   async rateContent(event) {
     if (!this.isGuestUser) {
       if (this.course.isAvailableLocally) {
-        // const popUp = await this.popoverCtrl.create({
-        //   component: ContentRatingAlertComponent,
-        //   event,
-        //   componentProps: {
-        //     content: this.course,
-        //     rating: this.userRating,
-        //     comment: this.ratingComment,
-        //     pageId: this.pageId
-        //   },
-        //   cssClass: 'sb-popover info',
-        // });
-        // await popUp.present();
-        // const { data } = await popUp.onDidDismiss();
-        // if (data && data.message === 'rating.success') {
-        //   this.userRating = data.rating;
-        //   this.ratingComment = data.comment;
-        // }
+        const popUp = await this.popoverCtrl.create({
+          component: ContentRatingAlertComponent,
+          event,
+          componentProps: {
+            content: this.course,
+            rating: this.userRating,
+            comment: this.ratingComment,
+            pageId: this.pageId
+          },
+          cssClass: 'sb-popover info',
+        });
+        await popUp.present();
+        const { data } = await popUp.onDidDismiss();
+        if (data && data.message === 'rating.success') {
+          this.userRating = data.rating;
+          this.ratingComment = data.comment;
+        }
         this.telemetryGeneratorService.generateInteractTelemetry(
           InteractType.TOUCH,
           InteractSubtype.RATING_CLICKED,
@@ -574,27 +576,27 @@ export class EnrolledCourseDetailsPage implements OnInit, OnDestroy, ConsentPopo
           undefined,
           this.objRollup,
           this.corRelationList);
-    // this.leaveTrainigPopover = await this.popoverCtrl.create({
-    //   component: ContentActionsComponent,
-    //   event,
-    //   cssClass: 'leave-training-popup',
-    //   showBackdrop: false,
-    //   componentProps: {
-    //     content: this.course,
-    //     batchDetails: this.batchDetails,
-    //     pageName: this.pageId,
-    //     corRelationList: this.corRelationList,
-    //     objRollup: this.telemetryObject,
-    //     showUnenrollButton: this.showUnenrollButton
-    //   },
-    // });
-    // await this.leaveTrainigPopover.present();
-    // const { data } = await this.leaveTrainigPopover.onDidDismiss();
-    // if (data && data.unenroll) {
-    //   await this.showConfirmAlert();
-    // } else if (data && data.syncProgress) {
-    //   await this.syncProgress();
-    // }
+    this.leaveTrainigPopover = await this.popoverCtrl.create({
+      component: ContentActionsComponent,
+      event,
+      cssClass: 'leave-training-popup',
+      showBackdrop: false,
+      componentProps: {
+        content: this.course,
+        batchDetails: this.batchDetails,
+        pageName: this.pageId,
+        corRelationList: this.corRelationList,
+        objRollup: this.telemetryObject,
+        showUnenrollButton: this.showUnenrollButton
+      },
+    });
+    await this.leaveTrainigPopover.present();
+    const { data } = await this.leaveTrainigPopover.onDidDismiss();
+    if (data && data.unenroll) {
+      await this.showConfirmAlert();
+    } else if (data && data.syncProgress) {
+      await this.syncProgress();
+    }
   }
 
   async  syncProgress() {
@@ -998,7 +1000,7 @@ export class EnrolledCourseDetailsPage implements OnInit, OnDestroy, ConsentPopo
    */
   getImportContentRequestBody(identifiers, isChild: boolean): Array<ContentImport> {
     const requestParams = [];
-    const folderPath = this.platform.is('ios') ? cordova.file.documentsDirectory : cordova.file.externalDataDirectory;
+    const folderPath = this.platform.is('ios') ? Directory.Documents : Directory.Data;
     identifiers.forEach((value) => {
       requestParams.push({
         isChildContent: isChild,
@@ -1121,44 +1123,44 @@ export class EnrolledCourseDetailsPage implements OnInit, OnDestroy, ConsentPopo
           this.datePipe.transform(this.courseStartDate, 'mediumDate')));
       }
 
-      // const popover = await this.popoverCtrl.create({
-      //   component: ConfirmAlertComponent,
-      //   componentProps: {
-      //     sbPopoverHeading: this.commonUtilService.translateMessage('DOWNLOAD'),
-      //     sbPopoverMainTitle: this.course.name,
-      //     isNotShowCloseIcon: true,
-      //     actionsButtons: [
-      //       {
-      //         btntext: this.commonUtilService.translateMessage('DOWNLOAD'),
-      //         btnClass: 'popover-color'
-      //       },
-      //     ],
-      //     icon: null,
-      //     metaInfo: this.commonUtilService.translateMessage('ITEMS', contentTypeCount)
-      //       + ' (' + this.fileSizePipe.transform(this.downloadSize, 2) + ')',
-      //   },
-      //   cssClass: 'sb-popover info',
-      // });
-      // await popover.present();
-      // const response = await popover.onDidDismiss();
-      // if (response && response.data) {
-      //   this.isDownloadStarted = true;
-      //   this.showCollapsedPopup = false;
-      //   this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
-      //     'download-all-button-clicked',
-      //     Environment.HOME,
-      //     PageId.COURSE_DETAIL
-      //   );
-      //   this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
-      //     'download-all-button-clicked',
-      //     Environment.HOME,
-      //     this.pageId
-      //   );
-      //   this.events.publish('header:decreasezIndex');
-      //   this.importContent(this.downloadIdentifiers, true, true);
-      //   this.showDownload = true;
-      // } else {
-      // }
+      const popover = await this.popoverCtrl.create({
+        component: ConfirmAlertComponent,
+        componentProps: {
+          sbPopoverHeading: this.commonUtilService.translateMessage('DOWNLOAD'),
+          sbPopoverMainTitle: this.course.name,
+          isNotShowCloseIcon: true,
+          actionsButtons: [
+            {
+              btntext: this.commonUtilService.translateMessage('DOWNLOAD'),
+              btnClass: 'popover-color'
+            },
+          ],
+          icon: null,
+          metaInfo: this.commonUtilService.translateMessage('ITEMS', contentTypeCount)
+            + ' (' + this.fileSizePipe.transform(this.downloadSize, 2) + ')',
+        },
+        cssClass: 'sb-popover info',
+      });
+      await popover.present();
+      const response = await popover.onDidDismiss();
+      if (response && response.data) {
+        this.isDownloadStarted = true;
+        this.showCollapsedPopup = false;
+        this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+          'download-all-button-clicked',
+          Environment.HOME,
+          PageId.COURSE_DETAIL
+        );
+        this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH,
+          'download-all-button-clicked',
+          Environment.HOME,
+          this.pageId
+        );
+        this.events.publish('header:decreasezIndex');
+        this.importContent(this.downloadIdentifiers, true, true);
+        this.showDownload = true;
+      } else {
+      }
     } else {
       this.commonUtilService.showToast('ERROR_NO_INTERNET_MESSAGE');
     }
@@ -1492,7 +1494,7 @@ export class EnrolledCourseDetailsPage implements OnInit, OnDestroy, ConsentPopo
         this.userId = uid;
       });
     this.checkCurrentUserType();
-    this.todayDate = window.dayjs().format('YYYY-MM-DD');
+    this.todayDate = dayjs().format('YYYY-MM-DD');
     this.identifier = this.courseCardData.contentId || this.courseCardData.identifier;
     this.downloadSize = 0;
     this.objRollup = ContentUtil.generateRollUp(this.courseCardData.hierarchyInfo, this.identifier);

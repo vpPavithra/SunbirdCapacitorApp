@@ -17,4 +17,5 @@ ext {
     URL_HOST = "mobile"
     host = "mobile"
     scheme = "org.sunbird.app"
+    androidxMaterialVersion = '1.8.0'
 }

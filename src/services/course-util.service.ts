@@ -2,8 +2,9 @@ import { Injectable } from '@angular/core';
 import { Platform, PopoverController } from '@ionic/angular';
 import { ContentImport } from '@project-sunbird/sunbird-sdk';
 import { ViewCreditsComponent } from '../app/components/popups/view-credits/view-credits.component';
+import { Directory } from '@capacitor/filesystem';
 
-declare const cordova;
+declare const window;
 @Injectable()
 export class CourseUtilService {
 
@@ -38,7 +39,7 @@ export class CourseUtilService {
      */
     getImportContentRequestBody(identifiers, isChild: boolean): Array<ContentImport> {
         const requestParams = [];
-        const folderPath = this.platform.is('ios') ? cordova.file.documentsDirectory : cordova.file.externalDataDirectory;
+        const folderPath = this.platform.is('ios') ? Directory.Documents: Directory.Data;
         identifiers.forEach((value) => {
             requestParams.push({
                 isChildContent: isChild,

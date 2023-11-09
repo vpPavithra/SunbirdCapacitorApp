@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@angular/core';
 import { NavigationExtras, Router } from '@angular/router';
-import {ContentFilterConfig, GenericAppConfig, RouterLinks} from '../../../app/app.constant';
+import { ContentFilterConfig, GenericAppConfig, RouterLinks } from '../../../app/app.constant';
 import { AppGlobalService } from '../../../services/app-global-service.service';
 import { AppHeaderService } from '../../../services/app-header.service';
 import { CanvasPlayerService } from '../../../services/canvas-player.service';
@@ -15,7 +15,7 @@ import {UtilityService} from '../../../services/utility-service';
 import { buildConfig } from '../../../environments/environment.stag';
 import { Encoding } from '@capacitor/filesystem';
 
-declare const cordova;
+declare const window;
 
 @Injectable({
     providedIn: 'root'
@@ -43,7 +43,7 @@ export class ContentPlayerHandler {
         const maxCompatibilityLevel = buildConfig.MAX_COMPATIBILITY_LEVEL;
          await this.utilityService.getBuildConfigValue(GenericAppConfig.MAX_COMPATIBILITY_LEVEL);
         if (content.contentData['compatibilityLevel'] > maxCompatibilityLevel) {
-            cordova.plugins.InAppUpdateManager.checkForImmediateUpdate(
+            window.cordova.plugins.InAppUpdateManager.checkForImmediateUpdate(
                 () => { },
                 () => { }
             );

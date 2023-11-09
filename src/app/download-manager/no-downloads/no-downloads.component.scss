@@ -1,0 +1,9 @@
+@import "src/assets/styles/base/_variables.scss";
+:host {
+.sb-nodownloads-container{
+     margin-top: 10vh;
+    .sb-nodownloads-title{
+        color: #{$gray-400};
+    }
+  }
+}

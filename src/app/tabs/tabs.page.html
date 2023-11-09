@@ -1,20 +1,10 @@
-<ion-tabs>
-
-  <ion-tab-bar slot="bottom">
-    <ion-tab-button tab="tab1" href="/tabs/tab1">
-      <ion-icon aria-hidden="true" name="triangle"></ion-icon>
-      <ion-label>Tab 1</ion-label>
-    </ion-tab-button>
-
-    <ion-tab-button tab="tab2" href="/tabs/tab2">
-      <ion-icon aria-hidden="true" name="ellipse"></ion-icon>
-      <ion-label>Tab 2</ion-label>
-    </ion-tab-button>
-
-    <ion-tab-button tab="tab3" href="/tabs/tab3">
-      <ion-icon aria-hidden="true" name="square"></ion-icon>
-      <ion-label>Tab 3</ion-label>
+<ion-tabs (ionTabsDidChange)="ionTabsDidChange($event)" #tabRef>
+  <ion-tab-bar slot="bottom" [ngClass]="{'rm-before': olderWebView}" >
+    <ion-tab-button [tab]="tab.root" *ngFor="let tab of tabs; let i = index;" [disabled]="tab.disabled" [style.display]="!tab.is_visable ? 'none' : ''"
+      [ngClass]="{'disabled': tab.disabled}" (click)="tab.label === '' ? openScanner(tab) : onTabClick(tab)" class= "{{tab.name}}">
+      <ion-icon [attr.aria-label]="tab?.selected ?
+      'selected ' + tab?.name : tab?.name" tabindex="0" [src]="(tab.root === selectedTab) ? tab?.icon?.active : 
+      (tab.isSelected && !selectedTab) ? tab?.icon?.active : tab?.icon?.inactive"></ion-icon>
     </ion-tab-button>
   </ion-tab-bar>
-
 </ion-tabs>

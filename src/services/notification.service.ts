@@ -16,7 +16,6 @@ import { NavigationService } from './navigation-handler.service';
 import { CommonUtilService } from './common-util.service';
 import { buildConfig } from '../environments/environment.stag';
 import { LocalNotifications, ListChannelsResult } from '@capacitor/local-notifications';
-declare const cordova;
 
 @Injectable({
     providedIn: 'root'
@@ -44,7 +43,6 @@ export class NotificationService implements SbNotificationService {
         @Inject('CONTENT_SERVICE') private contentService: ContentService,
         private utilityService: UtilityService,
         private formnFrameworkUtilService: FormAndFrameworkUtilService,
-        // private appVersion: AppVersion,
         // private localNotifications: LocalNotifications,
         // private splaschreenDeeplinkActionHandlerDelegate: SplaschreenDeeplinkActionHandlerDelegate,
         private telemetryGeneratorService: TelemetryGeneratorService,

@@ -66,7 +66,6 @@ import { TextbookTocService } from './textbook-toc-service';
 import { TagPrefixConstants } from '../../services/segmentation-tag/segmentation-tag.service';
 import { Directory } from '@capacitor/filesystem';
 
-declare const cordova;
 @Component({
   selector: 'app-collection-detail-etb',
   templateUrl: './collection-detail-etb.page.html',

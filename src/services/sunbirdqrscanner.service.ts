@@ -24,8 +24,7 @@ import {
 import { QRScannerResultHandler } from './qrscanresulthandler.service';
 import { TelemetryGeneratorService } from './telemetry-generator.service';
 import { CommonUtilService } from './common-util.service';
-
-declare const cordova;
+import {Camera} from '@capacitor/camera';
 
 @Injectable()
 export class SunbirdQRScanner {
@@ -54,7 +53,6 @@ export class SunbirdQRScanner {
     private container: ContainerService,
     // private permission: AndroidPermissionsService,
     private commonUtilService: CommonUtilService,
-    // private appVersion: AppVersion,
     private router: Router,
     private modalCtrl: ModalController,
     // private projectCert : ManageLearnCertificateService
@@ -91,6 +89,21 @@ export class SunbirdQRScanner {
       if (this.platform.is("ios")) {
         resolve(this.startQRScanner(screenTitle, displayText, displayTextColor, buttonText, showButton, source));
       } else {
+        Camera.requestPermissions({permissions: ['camera']}).then(async per => {
+          if(per.camera === 'granted') {
+            resolve(this.startQRScanner(screenTitle, displayText, displayTextColor, buttonText, showButton, source));
+          } else if(per.camera == "denied") {
+            await this.commonUtilService.showSettingsPageToast('CAMERA_PERMISSION_DESCRIPTION', this.appName, PageId.QRCodeScanner, false);
+          } else {
+            this.showPopover(source).then((result) => {
+              if (result) {
+                resolve(result);
+              } else {
+                resolve(undefined);
+              }
+            }).catch(e => console.error(e));
+          }
+        })
         // const permissionStatus = await this.commonUtilService.getGivenPermissionStatus(AndroidPermission.CAMERA);
         // if (permissionStatus.hasPermission) {
         //   resolve(this.startQRScanner(screenTitle, displayText, displayTextColor, buttonText, showButton, source));

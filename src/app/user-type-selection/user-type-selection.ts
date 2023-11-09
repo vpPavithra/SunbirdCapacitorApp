@@ -3,7 +3,6 @@ import { NavigationExtras, Router } from '@angular/router';
 import { OnboardingScreenType, PreferenceKey, ProfileConstants, RouterLinks } from '../../app/app.constant';
 import { GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs, LOGIN_TEACHER_TABS } from '../../app/module.service';
 import { HasNotSelectedFrameworkGuard } from '../../guards/has-not-selected-framework.guard';
-import { LoginHandlerService } from '../../services/login-handler.service';
 import { OnboardingConfigurationService } from '../../services/onboarding-configuration.service';
 import { AppGlobalService } from '../../services/app-global-service.service';
 import { AppHeaderService } from '../../services/app-header.service';
@@ -77,7 +76,6 @@ export class UserTypeSelectionPage implements OnDestroy {
     // private nativePageTransitions: NativePageTransitions,
     private tncUpdateHandlerService: TncUpdateHandlerService,
     private profileHandler: ProfileHandler,
-    private loginHandlerService: LoginHandlerService,
     private onboardingConfigurationService: OnboardingConfigurationService,
     private externalIdVerificationService: ExternalIdVerificationService,
   ) {

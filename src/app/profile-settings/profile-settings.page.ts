@@ -33,7 +33,7 @@ import {
   CachedItemRequestSourceFrom} from '@project-sunbird/sunbird-sdk';
 import { TelemetryGeneratorService } from '../../services/telemetry-generator.service';
 import { AppGlobalService } from '../../services/app-global-service.service';
-// import { SunbirdQRScanner } from '../../services/sunbirdqrscanner.service';
+import { SunbirdQRScanner } from '../../services/sunbirdqrscanner.service';
 import { CommonUtilService } from '../../services/common-util.service';
 import { ContainerService } from '../../services/container.services';
 import { AppHeaderService } from '../../services/app-header.service';
@@ -119,13 +119,12 @@ export class ProfileSettingsPage implements OnInit, OnDestroy, AfterViewInit {
     private telemetryGeneratorService: TelemetryGeneratorService,
     private appGlobalService: AppGlobalService,
     private events: Events,
-    // private scanner: SunbirdQRScanner,
+    private scanner: SunbirdQRScanner,
     public platform: Platform,
     private commonUtilService: CommonUtilService,
     private container: ContainerService,
     private headerService: AppHeaderService,
     private router: Router,
-    // private appVersion: AppVersion,
     private alertCtrl: AlertController,
     private location: Location,
     // private splashScreenService: SplashScreenService,
@@ -142,8 +141,9 @@ export class ProfileSettingsPage implements OnInit, OnDestroy, AfterViewInit {
   }
 
   async ngOnInit() {
+    console.log("profile settings page");
     this.getCategoriesAndUpdateAttributes();
-    // this.handleActiveScanner();
+    this.handleActiveScanner();
     await App.getInfo().then((info) => {
       this.appName = (info.name).toUpperCase();
     });
@@ -152,7 +152,7 @@ export class ProfileSettingsPage implements OnInit, OnDestroy, AfterViewInit {
       requiredFields: ProfileConstants.REQUIRED_FIELDS
     }).toPromise();
     await this.fetchSyllabusList();
-    // this.showQRScanner = !!(this.onboardingConfigurationService.getOnboardingConfig('profile-settings'));
+    this.showQRScanner = !!(this.onboardingConfigurationService.getOnboardingConfig('profile-settings'));
   }
 
 
@@ -210,7 +210,7 @@ export class ProfileSettingsPage implements OnInit, OnDestroy, AfterViewInit {
 
     if (this.navParams && this.navParams.stopScanner) {
       setTimeout(async () => {
-        // await this.scanner.stopScanner();
+        await this.scanner.stopScanner();
       }, 500);
     }
   }
@@ -360,18 +360,18 @@ export class ProfileSettingsPage implements OnInit, OnDestroy, AfterViewInit {
       Environment.ONBOARDING,
       PageId.SCAN_OR_MANUAL
     );
-    // this.scanner.startScanner(PageId.ONBOARDING_PROFILE_PREFERENCES, true).then((scannedData) => {
-    //   if (scannedData === 'skip') {
-    //     this.telemetryGeneratorService.generateImpressionTelemetry(
-    //       ImpressionType.VIEW, '',
-    //       PageId.ONBOARDING_PROFILE_PREFERENCES,
-    //       Environment.ONBOARDING
-    //     );
-    //     this.showQRScanner = false;
+    this.scanner.startScanner(PageId.ONBOARDING_PROFILE_PREFERENCES, true).then((scannedData) => {
+      if (scannedData === 'skip') {
+        this.telemetryGeneratorService.generateImpressionTelemetry(
+          ImpressionType.VIEW, '',
+          PageId.ONBOARDING_PROFILE_PREFERENCES,
+          Environment.ONBOARDING
+        );
+        this.showQRScanner = false;
 
-    //     this.resetProfileSettingsForm();
-    //   }
-    // }).catch(e => console.error(e));
+        this.resetProfileSettingsForm();
+      }
+    }).catch(e => console.error(e));
   }
 
   async onSubmitAttempt() {

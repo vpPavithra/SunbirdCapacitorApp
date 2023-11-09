@@ -14,7 +14,7 @@ export class UtilityService {
                 sbutility.getBuildConfigValue('org.sunbird.app', property, (entry: string) => {
                     resolve(entry);
                 }, err => {
-                    console.error(err);
+                    // console.error(err);
                     resolve(buildConfig.toString())
                     // reject(err);
                 });
@@ -125,11 +125,12 @@ export class UtilityService {
         return new Promise<DeviceSpecification>((resolve, reject) => {
             try {
                 sbutility.getDeviceSpec((deviceSpec: DeviceSpecification) => {
+                    console.log('device spec utility plugin ', deviceSpec);
                     resolve(deviceSpec);
-                }, err => {
+                },err => {
                     console.error(err);
                     reject(err);
-                });
+                })
             } catch (xc) {
                 console.error(xc);
                 reject(xc);

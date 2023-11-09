@@ -10,8 +10,8 @@ import { NavParams, Platform, PopoverController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 // import { AndroidPermissionsService } from '../../../../services/android-permissions/android-permissions.service';
 import { UtilityService } from '../../../../services/utility-service';
+import { Directory } from '@capacitor/filesystem';
 
-declare var cordova;
 @Component({
   selector: 'app-sb-share-popup',
   templateUrl: './sb-app-share-popup.component.html',
@@ -173,7 +173,7 @@ export class SbAppSharePopupComponent implements OnInit, OnDestroy {
   async exportApk(shareParams): Promise<void> {
     let destination = '';
     if (shareParams.saveFile) {
-      const folderPath = this.platform.is('ios') ? cordova.file.documentsDirectory : cordova.file.externalRootDirectory 
+      const folderPath = this.platform.is('ios') ? Directory.Documents : Directory.External
       destination = folderPath + 'Download/';
     }
     const loader = await this.commonUtilService.getLoader();
