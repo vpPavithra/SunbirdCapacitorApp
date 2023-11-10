@@ -1,5 +1,5 @@
 {
-  "name": "SampleAppWithCapPlugins",
+  "name": "Sunbird",
   "integrations": {
     "capacitor": {}
   },

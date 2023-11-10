@@ -2,7 +2,7 @@ import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'org.sunbird.app',
-  appName: 'SampleAppWithCapPlugins',
+  appName: 'Sunbird',
   webDir: 'www',
   server: {
     androidScheme: 'https'

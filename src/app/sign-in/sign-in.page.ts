@@ -174,7 +174,8 @@ export class SignInPage implements OnInit {
                 this.commonUtilService.showToast('ERROR_WHILE_LOGIN');
                 return;
             }
-            const nativeSessionKeycloakProvider = new NativeKeycloakSessionProvider(keycloakLoginSessionProviderConfig, this.loginDet)
+            let config = {WebviewSessionProviderConfig: keycloakLoginSessionProviderConfig, NativeKeycloakTokens: this.loginDet}
+            const nativeSessionKeycloakProvider = new NativeKeycloakSessionProvider(async () => config)
             await this.loginNavigationHandlerService.setSession(nativeSessionKeycloakProvider, this.skipNavigation, InteractSubtype.KEYCLOAK)
             .then(() => {
                 this.navigateBack(this.skipNavigation);

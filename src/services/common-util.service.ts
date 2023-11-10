@@ -843,15 +843,15 @@ export class CommonUtilService {
         });
     }
 
-    public isAndroidVer13(): boolean{
+    public async isAndroidVer13(): Promise<boolean>{
         let deviceInfo;
-        Device.getInfo().then(val => {
+        return Device.getInfo().then(val => {
             deviceInfo = val;
+            if (this.platform.is("android") && (deviceInfo.androidSDKVersion >= 33 || deviceInfo.osVersion >= "13")) {
+                return true;
+            } else {
+                return false;
+            }
         });
-        if (this.platform.is("android") && (deviceInfo.androidSDKVersion >= 33 || deviceInfo.osVersion >= "13")) {
-            return true;
-        } else {
-            return false;
-        }
     }
 }

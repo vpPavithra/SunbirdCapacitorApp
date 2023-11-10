@@ -32,7 +32,10 @@ export class ContentPlayerHandler {
         private commonUtilService: CommonUtilService,
         private appHeaderService: AppHeaderService,
         private utilityService: UtilityService
-    ) { }
+    ) { 
+        Filesystem.checkPermissions();
+        Filesystem.requestPermissions();
+    }
 
     /**
      * Launches Content-Player with given configuration

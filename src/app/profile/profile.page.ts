@@ -618,7 +618,7 @@ export class ProfilePage implements OnInit {
       this.commonUtilService.showToast('OFFLINE_CERTIFICATE_MESSAGE', false, '', 3000, 'top');
       return;
     }
-    if(this.commonUtilService.isAndroidVer13()) {
+    if(await this.commonUtilService.isAndroidVer13()) {
       await this.navigateToCertificateViewPage(project);
     } else {
       await this.checkForPermissions().then(async (result) => {
@@ -662,7 +662,7 @@ export class ProfilePage implements OnInit {
       telemetryObject,
       values);
     
-      if(this.commonUtilService.isAndroidVer13()) {
+      if(await this.commonUtilService.isAndroidVer13()) {
         await this.navigateToDownlaodCertificateView(course);
       } else {
         await this.checkForPermissions().then(async (result) => {
