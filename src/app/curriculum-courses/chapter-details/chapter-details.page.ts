@@ -41,7 +41,7 @@ import {
   ProfileNameConfirmationPopoverComponent
 } from '../../../app/components/popups/sb-profile-name-confirmation-popup/sb-profile-name-confirmation-popup.component';
 import { TncUpdateHandlerService } from '../../../services/handlers/tnc-update-handler.service';
-import { Directory } from '@capacitor/filesystem';
+import dayjs from 'dayjs';
 
 declare const window;
 @Component({
@@ -173,7 +173,7 @@ export class ChapterDetailsPage implements OnInit, OnDestroy, ConsentPopoverActi
   async ionViewWillEnter() {
     this.downloadIdentifiers = new Set();
     await this.headerService.showHeaderWithBackButton();
-    this.todayDate = window.dayjs().format('YYYY-MM-DD');
+    this.todayDate = dayjs().format('YYYY-MM-DD');
     await this.subscribeUtilityEvents();
     this.subscribeSdkEvent();
     await this.checkLoggedInOrGuestUser();
@@ -813,6 +813,7 @@ export class ChapterDetailsPage implements OnInit, OnDestroy, ConsentPopoverActi
         course: this.updatedCourseCardData
       }
     };
+    console.log('params before navigate ', params);
     return params;
   }
 
@@ -889,7 +890,7 @@ export class ChapterDetailsPage implements OnInit, OnDestroy, ConsentPopoverActi
 
   getImportContentRequestBody(identifiers, isChild: boolean): Array<ContentImport> {
     const requestParams = [];
-    const folderPath = this.platform.is('ios') ? Directory.Documents : Directory.External;
+    const folderPath = this.platform.is('ios') ? window.cordova.file.documentsDirectory: window.cordova.file.dataDirectory;
     identifiers.forEach((value) => {
       requestParams.push({
         isChildContent: isChild,

@@ -3,11 +3,13 @@ import { Environment, ID, InteractType, PageId } from '../../../services/telemet
 import { CommonUtilService } from '../../../services/common-util.service';
 import { TelemetryGeneratorService } from '../../../services/telemetry-generator.service';
 import { StoragePermissionHandlerService } from '../../../services/storage-permission/storage-permission-handler.service';
-import { Directory, Filesystem } from '@capacitor/filesystem';
 import { FileOpener } from '@capacitor-community/file-opener';
 import { App } from '@capacitor/app';
 import { Platform } from '@ionic/angular';
 import 'datatables.net-fixedcolumns';
+import { File } from '@awesome-cordova-plugins/file/ngx';
+
+declare var window;
 @Component({
   selector: 'dashboard-component',
   templateUrl: './dashboard.component.html',
@@ -28,7 +30,8 @@ export class DashboardComponent implements OnInit {
     private storagePermissionHandlerService: StoragePermissionHandlerService,
     private commonUtilService: CommonUtilService,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    private platform: Platform
+    private platform: Platform,
+    private file: File
   ) {
 
   }
@@ -70,13 +73,13 @@ export class DashboardComponent implements OnInit {
   handleExportCsv() {
     const expTime = new Date().getTime();
     const filename = this.collectionName.trim() + '_' + expTime + '.csv';
-    // const downloadDirectory = this.platform.is('ios') ? `${cordova.file.documentsDirectory}Download/` : cordova.file.externalDataDirectory
-    const downloadDirectory = this.platform.is('ios') ? `${Directory.Documents}Download/` : Directory.External
+    const downloadDirectory = this.platform.is('ios') ? `${window.cordova.file.documentsDirectory}Download/` : window.cordova.file.externalDataDirectory
+    // const downloadDirectory = this.platform.is('ios') ? `${Directory.Documents}Download/` : Directory.External
 
     this.lib.instance.exportCsv({ 'strict': true }).then((csvData) => {
       console.log('exportCSVdata', csvData);
-      Filesystem.writeFile({path: filename, data: csvData, directory: Directory.Documents, recursive: true})
-      // this.file.writeFile(downloadDirectory, filename, csvData, { replace: true })
+      // Filesystem.writeFile({path: filename, data: csvData, directory: Directory.Documents, recursive: true})
+      this.file.writeFile(downloadDirectory, filename, csvData, { replace: true })
         .then((res) => {
           console.log('rs write file', res);
           this.openCsv(res.uri);
@@ -103,8 +106,8 @@ export class DashboardComponent implements OnInit {
 
   writeFile(downloadDirectory: string, csvData: any) {
     const fileName = `course_${new Date().getTime()}`;
-    Filesystem.writeFile({path: fileName, data: csvData, directory: Directory.Library, recursive: true})
-    // this.file.writeFile(downloadDirectory, fileName, csvData, { replace: true })
+    // Filesystem.writeFile({path: fileName, data: csvData, directory: Directory.Library, recursive: true})
+    this.file.writeFile(downloadDirectory, fileName, csvData, { replace: true })
       .then((res) => {
         console.log('rs write file', res);
         this.openCsv(res.uri);

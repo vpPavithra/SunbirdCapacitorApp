@@ -63,9 +63,9 @@ import { Events } from '../../../util/events';
 import { Subscription } from 'rxjs';
 import { SbSubjectListPopupComponent } from '../../../app/components/popups/sb-subject-list-popup/sb-subject-list-popup.component';
 import { CategoryTerm, FrameworkCategory } from '@project-sunbird/client-services/models/channel';
-// import { FrameworkSelectionDelegateService } from './../../profile/framework-selection/framework-selection.page';
+import { FrameworkSelectionDelegateService } from './../../profile/framework-selection/framework-selection.page';
 import { TranslateService } from '@ngx-translate/core';
-// import { SplaschreenDeeplinkActionHandlerDelegate } from '../../../services/sunbird-splashscreen/splaschreen-deeplink-action-handler-delegate';
+import { SplaschreenDeeplinkActionHandlerDelegate } from '../../../services/sunbird-splashscreen/splaschreen-deeplink-action-handler-delegate';
 import { SegmentationTagService } from '../../../services/segmentation-tag/segmentation-tag.service';
 import { FormConstants } from '../../../app/form.constants';
 import { SbPopoverComponent } from '../../components/popups/sb-popover/sb-popover.component';
@@ -135,9 +135,9 @@ export class UserHomePage implements OnInit, OnDestroy, OnTabViewWillEnter {
     private modalCtrl: ModalController,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
-    // private frameworkSelectionDelegateService: FrameworkSelectionDelegateService,
+    private frameworkSelectionDelegateService: FrameworkSelectionDelegateService,
     private translate: TranslateService,
-    // private splaschreenDeeplinkActionHandlerDelegate: SplaschreenDeeplinkActionHandlerDelegate,
+    private splaschreenDeeplinkActionHandlerDelegate: SplaschreenDeeplinkActionHandlerDelegate,
     private segmentationTagService: SegmentationTagService,
     private popoverCtrl: PopoverController,
     private onboardingConfigurationService: OnboardingConfigurationService
@@ -181,6 +181,7 @@ export class UserHomePage implements OnInit, OnDestroy, OnTabViewWillEnter {
     this.profile = await this.profileService.getActiveSessionProfile(
       { requiredFields: ProfileConstants.REQUIRED_FIELDS }
     ).toPromise();
+    console.log("this.profile ", this.profile);
     await this.getFrameworkDetails();
     await this.fetchDisplayElements();
     this.guestUser = !this.appGlobalService.isUserLoggedIn();
@@ -290,6 +291,7 @@ export class UserHomePage implements OnInit, OnDestroy, OnTabViewWillEnter {
     await this.getOtherMLCategories();
     displayItems = this.mapContentFacteTheme(displayItems);
     this.checkHomeData(displayItems);
+    console.log('display items ', displayItems);
     this.displaySections = this.contentAggregatorHandler.populateIcons(displayItems);
     this.showorHideBanners();
     this.refresh = false;
@@ -622,7 +624,7 @@ export class UserHomePage implements OnInit, OnDestroy, OnTabViewWillEnter {
 
     const formConfig = await this.formAndFrameworkUtilService.getContentRequestFormConfig();
     this.appGlobalService.formConfig = formConfig;
-    // this.frameworkSelectionDelegateService.delegate = this;
+    this.frameworkSelectionDelegateService.delegate = this;
     await this.router.navigate([`/${RouterLinks.PROFILE}/${RouterLinks.FRAMEWORK_SELECTION}`],
       {
         state: {
@@ -760,8 +762,8 @@ export class UserHomePage implements OnInit, OnDestroy, OnTabViewWillEnter {
         await this.handlePillSelect({ data: [{ value: banner }] }, section);
         break;
       case 'banner_content':
-        // await this.splaschreenDeeplinkActionHandlerDelegate.navigateContent(banner.action.params.identifier,
-        //   undefined, undefined, undefined, undefined, corRelationList);
+        await this.splaschreenDeeplinkActionHandlerDelegate.navigateContent(banner.action.params.identifier,
+          undefined, undefined, undefined, undefined, corRelationList);
         break;
     }
   }

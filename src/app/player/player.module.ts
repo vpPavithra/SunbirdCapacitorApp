@@ -11,10 +11,6 @@ import { SunbirdPdfPlayerModule } from '@project-sunbird/sunbird-pdf-player-v9';
 import { SunbirdEpubPlayerModule } from '@project-sunbird/sunbird-epub-player-v9';
 // import { QumlLibraryModule } from '@project-sunbird/sunbird-quml-player-v9';
 
-
-
-
-
 const routes: Routes = [
   {
     path: '',

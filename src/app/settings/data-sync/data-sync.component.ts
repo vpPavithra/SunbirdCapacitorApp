@@ -16,7 +16,7 @@ import {
   ArchiveObjectType, ArchiveService,
   ObjectNotFoundError, TelemetryAutoSyncModes, TelemetryImpressionRequest, TelemetryService
 } from '@project-sunbird/sunbird-sdk';
-import { Directory } from '@capacitor/filesystem';
+import dayjs from 'dayjs';
 
 declare const window;
 
@@ -49,7 +49,7 @@ export class DataSyncComponent implements OnInit, OnDestroy {
     this.lastSyncDateTime = this.telemetryService.lastSyncedTimestamp().pipe(
       map((ts) => {
         if (ts) {
-          return window.dayjs(ts).format('DD/MM/YYYY, hh:mm a');
+          // return dayjs(ts).format('DD/MM/YYYY, hh:mm a');
         }
 
         return undefined;
@@ -129,7 +129,7 @@ export class DataSyncComponent implements OnInit, OnDestroy {
     } catch (e) {
     }
     
-    const folderPath = this.platform.is('ios') ? Directory.Cache: Directory.Data;
+    const folderPath = this.platform.is('ios') ? window.cordova.file.cacheDirectory: window.cordova.file.dataDirectory;
     return this.archiveService.export(
       {
         objects: [{ type: ArchiveObjectType.TELEMETRY }],

@@ -6,7 +6,8 @@ import {MaxAttempt, PreferenceKey, ProfileConstants} from '../app/app.constant';
 import { Events } from '../util/events';
 import { LocalCourseService } from './local-course.service';
 import { CommonUtilService } from './common-util.service';
-import { Encoding, Filesystem, ReadFileResult } from '@capacitor/filesystem';
+import { File } from '@awesome-cordova-plugins/file/ngx';
+// import { Encoding, Filesystem, ReadFileResult } from '@capacitor/filesystem';
 
 declare global {
     interface Window {
@@ -116,15 +117,15 @@ export class CanvasPlayerService {
             const _headers = new HttpHeaders();
             const headers = _headers.set('Content-Type', 'text/xml');
             return new Promise((resolve, reject) => {
-                try {
-                    Filesystem.readFile({path: path+file, encoding: Encoding.UTF8}).then((response: ReadFileResult) => {
-                        const x2js = new X2JS();
-                        const json = x2js.xml2js(response.data as string);
-                        resolve(json);
-                    }).catch((e) => console.error(e));
-                } catch (error) {
-                    reject('Unable to convert');
-                }
+                // try {
+                //     Filesystem.readFile({path: path+file, encoding: Encoding.UTF8}).then((response: ReadFileResult) => {
+                //         const x2js = new X2JS();
+                //         const json = x2js.xml2js(response.data as string);
+                //         resolve(json);
+                //     }).catch((e) => console.error(e));
+                // } catch (error) {
+                //     reject('Unable to convert');
+                // }
             });
         }
     }

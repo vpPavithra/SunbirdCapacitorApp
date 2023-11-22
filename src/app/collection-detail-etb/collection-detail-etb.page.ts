@@ -64,8 +64,8 @@ import { ConfirmAlertComponent } from '../components/confirm-alert/confirm-alert
 import { SbSharePopupComponent } from '../components/popups/sb-share-popup/sb-share-popup.component';
 import { TextbookTocService } from './textbook-toc-service';
 import { TagPrefixConstants } from '../../services/segmentation-tag/segmentation-tag.service';
-import { Directory } from '@capacitor/filesystem';
 
+declare var window;
 @Component({
   selector: 'app-collection-detail-etb',
   templateUrl: './collection-detail-etb.page.html',
@@ -676,7 +676,7 @@ export class CollectionDetailEtbPage implements OnInit {
    */
   getImportContentRequestBody(identifiers: Array<string>, isChild: boolean): Array<ContentImport> {
     const requestParams: ContentImport[] = [];
-    const folderPath = this.platform.is('ios') ? Directory.Documents : this.storageService.getStorageDestinationDirectoryPath();
+    const folderPath = this.platform.is('ios') ? window.cordova.file.documentsDirectory : this.storageService.getStorageDestinationDirectoryPath();
    
     identifiers.forEach((value) => {
       requestParams.push({

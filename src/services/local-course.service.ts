@@ -25,6 +25,8 @@ import { CategoryKeyTranslator } from '../pipes/category-key-translator/category
 import { ConsentService } from './consent-service';
 import { FormAndFrameworkUtilService } from './formandframeworkutil.service';
 import { FormConstants } from '../app/form.constants';
+import dayjs from 'dayjs';
+import duration from 'dayjs/plugin/duration';
 
 export interface ConsentPopoverActionsDelegate {
   onConsentPopoverShow(): void;
@@ -373,8 +375,8 @@ export class LocalCourseService {
     const utilityConfigFields = await this.formAndFrameworkUtilService.getFormFields(FormConstants.UTILITY_CONFIG);
     const batchEnrollmentEndDateDisplayThreshold: number = Number(utilityConfigFields
         .find((config) => config.code === 'batchEndTimerConfig')['config']['batchEndDateTimer']);
-    const today = window.dayjs();
-    const enrollmentEndDate = (window.dayjs(endDate)).add(1, 'days');
+    const today = dayjs();
+    const enrollmentEndDate = (dayjs(endDate)).add(1, 'day');
     if (enrollmentEndDate.diff(today, 'day') > batchEnrollmentEndDateDisplayThreshold) {
       return undefined;
     }
@@ -383,8 +385,9 @@ export class LocalCourseService {
     if (today.diff(countTimeOfEOD) > 0) {
       return undefined;
     }
-    const duration = window.dayjs.duration(enrollmentEndDate.diff(today));
-    return duration.format('D [day(s)] H [h] m [m]');
+    dayjs.extend(duration)
+    const duration1 = dayjs.duration(enrollmentEndDate.diff(today));
+    return duration1.format('D [day(s)] H [h] m [m]');
   }
 
   isConsentPopupVisible(): boolean {

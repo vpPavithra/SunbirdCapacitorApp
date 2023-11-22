@@ -1,13 +1,15 @@
 import { Injectable, Inject } from '@angular/core';
 import { SharedPreferences } from '@project-sunbird/sunbird-sdk';
 import { PreferenceKey, StoreRating } from '../app/app.constant';
-import { Directory, Encoding, Filesystem } from '@capacitor/filesystem';
-declare const window: any;
-
+import { File } from '@awesome-cordova-plugins/file/ngx';
+import dayjs from 'dayjs';
+declare var window;
 @Injectable()
 export class AppRatingService {
+
   constructor(
     @Inject('SHARED_PREFERENCES') private preference: SharedPreferences,
+    private fileCtrl: File
   ) { }
 
   async checkInitialDate() {
@@ -18,7 +20,7 @@ export class AppRatingService {
   }
 
   private async setInitialDate() {
-    const presentDate = window.dayjs().format();
+    const presentDate = dayjs().format();
     await this.preference.putString(PreferenceKey.APP_RATING_DATE, String(presentDate)).toPromise();
   }
 
@@ -27,12 +29,13 @@ export class AppRatingService {
   }
 
   private async createFolder(rate) {
-    await Filesystem.mkdir({path: StoreRating.FOLDER_NAME, directory: Directory.Data, recursive: true})
+    await this.fileCtrl.createDir(window.cordova.file.dataDirectory, StoreRating.FOLDER_NAME, true)
     await this.writeFile(rate);
   }
 
   private async writeFile(rate) {
-    await Filesystem.writeFile({path: StoreRating.FOLDER_NAME+'/'+StoreRating.FILE_NAME, data: StoreRating.FILE_TEXT + ' = ' + rate, directory: Directory.Data, encoding: Encoding.UTF8, recursive: true});
+    await this.fileCtrl.writeFile(window.cordova.file.dataDirectory + '/' + StoreRating.FOLDER_NAME,
+      StoreRating.FILE_NAME, StoreRating.FILE_TEXT + ' = ' + rate, { replace: true });
   }
 
   async rateLaterClickedCount() {

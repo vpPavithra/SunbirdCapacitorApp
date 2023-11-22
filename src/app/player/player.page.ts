@@ -31,12 +31,11 @@ import { Environment, InteractSubtype, PageId } from '../../services/telemetry-c
 import { SbSharePopupComponent } from '../components/popups/sb-share-popup/sb-share-popup.component';
 import { DownloadPdfService } from '../../services/download-pdf/download-pdf.service';
 import { FileOpener } from '@capacitor-community/file-opener';
-// import { FileTransfer, FileTransferObject } from '@awesome-cordova-plugins/file-transfer/ngx';
+import { FileTransfer, FileTransferObject } from '@awesome-cordova-plugins/file-transfer/ngx';
 import { ContentUtil } from '../../util/content-util';
 import { PrintPdfService } from '../../services/print-pdf/print-pdf.service';
 import { FormConstants } from '../form.constants';
-import { Directory, Filesystem } from '@capacitor/filesystem';
-// import { File } from '@awesome-cordova-plugins/file/ngx';
+import { File } from '@awesome-cordova-plugins/file/ngx';
 
 declare const window;
 
@@ -79,35 +78,37 @@ export class PlayerPage implements OnInit, OnDestroy, PlayerActionHandlerDelegat
     private events: Events,
     private alertCtrl: AlertController,
     private commonUtilService: CommonUtilService,
-    private route: ActivatedRoute,
+    // private route: ActivatedRoute,
     private router: Router,
     private location: Location,
     private popoverCtrl: PopoverController,
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     private downloadPdfService: DownloadPdfService,
-    // private transfer: FileTransfer,
+    private transfer: FileTransfer,
     private telemetryGeneratorService: TelemetryGeneratorService,
     private printPdfService: PrintPdfService,
-    // private file: File,
+    private file: File,
   ) {
     this.canvasPlayerService.handleAction();
 
     // Binding following methods to making it available to content player which is an iframe
     (window as any).onContentNotFound = this.onContentNotFound.bind(this);
     (window as any).onUserSwitch = this.onUserSwitch.bind(this);
-
-    if (this.router.getCurrentNavigation().extras.state) {
-      this.content = this.router.getCurrentNavigation().extras.state.contentToPlay;
-      this.config = this.router.getCurrentNavigation().extras.state.config;
-      this.course = this.router.getCurrentNavigation().extras.state.course;
-      this.navigateBackToContentDetails = this.router.getCurrentNavigation().extras.state.navigateBackToContentDetails;
-      this.corRelationList = this.router.getCurrentNavigation().extras.state.corRelation;
-      this.isCourse = this.router.getCurrentNavigation().extras.state.isCourse;
-      this.isChildContent = this.router.getCurrentNavigation().extras.state.childContent;
+    let navData = this.router.getCurrentNavigation();
+    console.log("navData ", navData);
+    if (navData.extras.state) {
+      this.content = navData.extras.state.contentToPlay;
+      this.config = navData.extras.state.config;
+      this.course = navData.extras.state.course;
+      this.navigateBackToContentDetails = navData.extras.state.navigateBackToContentDetails;
+      this.corRelationList = navData.extras.state.corRelation;
+      this.isCourse = navData.extras.state.isCourse;
+      this.isChildContent = navData.extras.state.childContent;
     }
   }
 
   async ngOnInit() {
+    console.log('ngoninit ');
     this.playerConfig = await this.formAndFrameworkUtilService.getPdfPlayerConfiguration();
     if(this.config['metadata'].hierarchyInfo) {
       await this.getNextContent(this.config['metadata'].hierarchyInfo , this.config['metadata'].identifier)
@@ -158,6 +159,7 @@ export class PlayerPage implements OnInit, OnDestroy, PlayerActionHandlerDelegat
     this.isExitPopupShown = false;
   }
   async ionViewWillEnter() {
+    console.log('ionViewWillEnter ');
     const playerInterval = setInterval(async () => {
       if (this.playerType === 'sunbird-old-player') {
         await ScreenOrientation.lock({orientation: 'landscape'});
@@ -185,52 +187,52 @@ export class PlayerPage implements OnInit, OnDestroy, PlayerActionHandlerDelegat
           this.previewElement.nativeElement.src = '';
           this.previewElement.nativeElement.src = src;
           this.previewElement.nativeElement.onload = () => {
-            setTimeout(() => {
-              this.previewElement.nativeElement.contentWindow['cordova'] = window['cordova'];
-              this.previewElement.nativeElement.contentWindow['Media'] = window['Media'];
-              this.previewElement.nativeElement.contentWindow['initializePreview'](this.config);
-              this.previewElement.nativeElement.contentWindow.addEventListener('message', async resp => {
-                if (resp.data === 'renderer:question:submitscore') {
-                  this.courseService.syncAssessmentEvents().subscribe();
-                } else if (resp.data === 'renderer:question:reviewAssessment') {
-                  this.courseService.clearAssessments().subscribe();
-                } else if (resp.data && typeof resp.data === 'object') {
-                  if (resp.data['player.pdf-renderer.error']) {
-                    const pdfError = resp.data['player.pdf-renderer.error'];
-                    if (pdfError.name === 'MissingPDFException') {
-                      const downloadUrl = this.config['metadata']['contentData']['streamingUrl'] ||
-                        this.config['metadata']['contentData']['artifactUrl'];
-                      this.telemetryGeneratorService.generateInteractTelemetry(
-                        InteractType.TOUCH,
-                        InteractSubtype.DOWNLOAD_PDF_CLICKED,
-                        Environment.PLAYER,
-                        PageId.PLAYER,
-                        ContentUtil.getTelemetryObject(this.config['metadata']['contentData']),
-                        undefined,
-                        ContentUtil.generateRollUp(this.config['metadata']['hierarchyInfo'], this.config['metadata']['identifier']));
-                      await this.openPDF(downloadUrl);
-                    }
-                  } else if (resp.data && resp.data.event === 'renderer:contentNotComaptible'
-                    || resp.data && resp.data.data.event === 'renderer:contentNotComaptible') {
-                    window.cordova.plugins.InAppUpdateManager.checkForImmediateUpdate(
-                      () => { },
-                      () => { }
-                    );
-                  } else if (resp.data && resp.data.event === 'renderer:maxLimitExceeded') {
-                    await this.closeIframe();
-                  }
-                } else if (this.isJSON(resp.data)) {
-                  const response = JSON.parse(resp.data);
-                  if (response.event === 'renderer:navigate') {
-                    this.navigateBackToTrackableCollection = true;
-                    this.navigateBackToContentDetails = false;
-                    await this.closeIframe({
-                      identifier: response.data.identifier
-                    });
-                  }
-                }
-              });
-            }, 1000);
+            // setTimeout(() => {
+            //   this.previewElement.nativeElement.contentWindow['cordova'] = window['cordova'];
+            //   this.previewElement.nativeElement.contentWindow['Media'] = window['Media'];
+            //   this.previewElement.nativeElement.contentWindow['initializePreview'](this.config);
+            //   this.previewElement.nativeElement.contentWindow.addEventListener('message', async resp => {
+            //     if (resp.data === 'renderer:question:submitscore') {
+            //       this.courseService.syncAssessmentEvents().subscribe();
+            //     } else if (resp.data === 'renderer:question:reviewAssessment') {
+            //       this.courseService.clearAssessments().subscribe();
+            //     } else if (resp.data && typeof resp.data === 'object') {
+            //       if (resp.data['player.pdf-renderer.error']) {
+            //         const pdfError = resp.data['player.pdf-renderer.error'];
+            //         if (pdfError.name === 'MissingPDFException') {
+            //           const downloadUrl = this.config['metadata']['contentData']['streamingUrl'] ||
+            //             this.config['metadata']['contentData']['artifactUrl'];
+            //           this.telemetryGeneratorService.generateInteractTelemetry(
+            //             InteractType.TOUCH,
+            //             InteractSubtype.DOWNLOAD_PDF_CLICKED,
+            //             Environment.PLAYER,
+            //             PageId.PLAYER,
+            //             ContentUtil.getTelemetryObject(this.config['metadata']['contentData']),
+            //             undefined,
+            //             ContentUtil.generateRollUp(this.config['metadata']['hierarchyInfo'], this.config['metadata']['identifier']));
+            //           await this.openPDF(downloadUrl);
+            //         }
+            //       } else if (resp.data && resp.data.event === 'renderer:contentNotComaptible'
+            //         || resp.data && resp.data.data.event === 'renderer:contentNotComaptible') {
+            //         window.cordova.plugins.InAppUpdateManager.checkForImmediateUpdate(
+            //           () => { },
+            //           () => { }
+            //         );
+            //       } else if (resp.data && resp.data.event === 'renderer:maxLimitExceeded') {
+            //         await this.closeIframe();
+            //       }
+            //     } else if (this.isJSON(resp.data)) {
+            //       const response = JSON.parse(resp.data);
+            //       if (response.event === 'renderer:navigate') {
+            //         this.navigateBackToTrackableCollection = true;
+            //         this.navigateBackToContentDetails = false;
+            //         await this.closeIframe({
+            //           identifier: response.data.identifier
+            //         });
+            //       }
+            //     }
+            //   });
+            // }, 1000);
           };
         }
       }
@@ -354,20 +356,20 @@ export class PlayerPage implements OnInit, OnDestroy, PlayerActionHandlerDelegat
   handleDownload() {
     if (this.content.contentData.downloadUrl) {
       if (this.platform.is('ios')) {
-        Filesystem.requestPermissions();
-        Filesystem.readdir({path: 'downloads', directory: Directory.Documents})
-        // this.file.checkDir(this.file.documentsDirectory, 'downloads')
+        // Filesystem.requestPermissions();
+        // Filesystem.readdir({path: 'downloads', directory: Directory.Documents})
+        this.file.checkDir(this.file.documentsDirectory, 'downloads')
         .then(() => {
-          Filesystem.readFile({path: 'downloads/' + this.content.name + '.pdf', directory: Directory.Documents})
-          // this.file.checkFile(this.file.documentsDirectory, 'downloads/' + this.content.name + '.pdf')
+          // Filesystem.readFile({path: 'downloads/' + this.content.name + '.pdf', directory: Directory.Documents})
+          this.file.checkFile(this.file.documentsDirectory, 'downloads/' + this.content.name + '.pdf')
           .then(_ => {this.commonUtilService.showToast("A file with the same name already exists!")})
           .catch(() => {
             this.downloadFileIos(this.content);
           })
         }) 
         .catch(() => {
-          Filesystem.mkdir({path: 'downloads', directory: Directory.Documents, recursive: false})
-          // this.file.createDir(this.file.documentsDirectory, 'downloads', false)
+          // Filesystem.mkdir({path: 'downloads', directory: Directory.Documents, recursive: false})
+          this.file.createDir(this.file.documentsDirectory, 'downloads', false)
           .then(response => {
             this.downloadFileIos(this.content);
           })
@@ -394,7 +396,7 @@ export class PlayerPage implements OnInit, OnDestroy, PlayerActionHandlerDelegat
   }
 
   downloadFileIos(content) {
-    const path = Directory.Documents;
+    // const path = Directory.Documents;
     const fileUri = content.contentData.downloadUrl;
     const fileName = content.name;
     setTimeout(() => {
@@ -594,17 +596,17 @@ export class PlayerPage implements OnInit, OnDestroy, PlayerActionHandlerDelegat
     }
     const loader = await this.commonUtilService.getLoader(undefined, this.commonUtilService.translateMessage('DOWNLOADING_2'));
     await loader.present();
-    // const fileTransfer: FileTransferObject = this.transfer.create();
-    // const entry = await fileTransfer
-    //   .download(url, cordova.file.cacheDirectory + url.substring(url.lastIndexOf('/') + 1))
-    //   .catch((e) => {
-    //     this.telemetryGeneratorService.generateErrorTelemetry(Environment.PLAYER,
-    //       TelemetryErrorCode.ERR_DOWNLOAD_FAILED,
-    //       ErrorType.SYSTEM,
-    //       PageId.PLAYER,
-    //       JSON.stringify(e),
-    //     );
-    //   });
+    const fileTransfer: FileTransferObject = this.transfer.create();
+    const entry = await fileTransfer
+      .download(url, window.cordova.file.cacheDirectory + url.substring(url.lastIndexOf('/') + 1))
+      .catch((e) => {
+        this.telemetryGeneratorService.generateErrorTelemetry(Environment.PLAYER,
+          TelemetryErrorCode.ERR_DOWNLOAD_FAILED,
+          ErrorType.SYSTEM,
+          PageId.PLAYER,
+          JSON.stringify(e),
+        );
+      });
     loader.dismiss();
     const stageId = this.previewElement.nativeElement.contentWindow['EkstepRendererAPI'].getCurrentStageId();
     try {

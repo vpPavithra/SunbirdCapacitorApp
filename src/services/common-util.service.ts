@@ -23,14 +23,14 @@ import {
     CorReleationDataType, ImpressionType, ObjectType
 } from '../services/telemetry-constants';
 import { SbGenericPopoverComponent } from '../app/components/popups/sb-generic-popover/sb-generic-popover.component';
-// import { QRAlertCallBack, QRScannerAlert } from '../app/qrscanner-alert/qrscanner-alert.page';
+import { QRAlertCallBack, QRScannerAlert } from '../app/qrscanner-alert/qrscanner-alert.page';
 import { Observable, merge } from 'rxjs';
 import { distinctUntilChanged, map, share, tap } from 'rxjs/operators';
 import { App } from '@capacitor/app';
 import { SbPopoverComponent } from '../app/components/popups/sb-popover/sb-popover.component';
-// import { AndroidPermissionsStatus } from './android-permissions/android-permission';
+import { AndroidPermissionsStatus } from './android-permissions/android-permission';
 import { Router } from '@angular/router';
-// import { AndroidPermissionsService } from './android-permissions/android-permissions.service';
+import { AndroidPermissionsService } from './android-permissions/android-permissions.service';
 import GraphemeSplitter from 'grapheme-splitter';
 import { ComingSoonMessageService } from './coming-soon-message.service';
 import { Device } from '@capacitor/device';
@@ -62,17 +62,13 @@ export class CommonUtilService {
         private loadingCtrl: LoadingController,
         private events: Events,
         private popOverCtrl: PopoverController,
-        // private network: Network,
         private zone: NgZone,
         private platform: Platform,
         private telemetryGeneratorService: TelemetryGeneratorService,
-        // private webView: WebView,
-        // private appVersion: AppVersion,
         private router: Router,
         private toastController: ToastController,
-        // private permissionService: AndroidPermissionsService,
-        private comingSoonMessageService: ComingSoonMessageService,
-        // private device: Device
+        private permissionService: AndroidPermissionsService,
+        private comingSoonMessageService: ComingSoonMessageService
     ) {
         this.networkAvailability$ = merge(
             // this.network.onChange().pipe(
@@ -222,27 +218,27 @@ export class CommonUtilService {
         }
         let popOver: any;
         const self = this;
-        // const callback: QRAlertCallBack = {
-        //     tryAgain() {
-        //         self.events.publish('event:showScanner', { pageName: source });
-        //         popOver.dismiss();
-        //     },
-        //     cancel() {
-        //         popOver.dismiss();
-        //     }
-        // };
-        // popOver = await this.popOverCtrl.create({
-        //     component: QRScannerAlert,
-        //     componentProps: {
-        //         callback,
-        //         icon: './assets/imgs/ic_coming_soon.png',
-        //         messageKey: 'CONTENT_IS_BEING_ADDED',
-        //         cancelKey: 'hide',
-        //         tryAgainKey: 'TRY_DIFF_QR',
-        //     },
-        //     cssClass: 'qr-alert-invalid'
-        // });
-        // await popOver.present();
+        const callback: QRAlertCallBack = {
+            tryAgain() {
+                self.events.publish('event:showScanner', { pageName: source });
+                popOver.dismiss();
+            },
+            cancel() {
+                popOver.dismiss();
+            }
+        };
+        popOver = await this.popOverCtrl.create({
+            component: QRScannerAlert,
+            componentProps: {
+                callback,
+                icon: './assets/imgs/ic_coming_soon.png',
+                messageKey: 'CONTENT_IS_BEING_ADDED',
+                cancelKey: 'hide',
+                tryAgainKey: 'TRY_DIFF_QR',
+            },
+            cssClass: 'qr-alert-invalid'
+        });
+        await popOver.present();
     }
     /**
      * Show popup with Close.
@@ -283,24 +279,24 @@ export class CommonUtilService {
             undefined,
             corRelationList
         );
-        // const { data } = await qrAlert.onDidDismiss();
-        // let subtype = '' 
-        // if (!data) {
-        //     subtype = InteractSubtype.OUTSIDE
-        // } else {
-        //     subtype = data.isLeftButtonClicked ? InteractSubtype.CTA : InteractSubtype.CLOSE_ICON
-        // }
+        const { data } = await qrAlert.onDidDismiss();
+        let subtype = '' 
+        if (!data) {
+            subtype = InteractSubtype.OUTSIDE
+        } else {
+            subtype = data.isLeftButtonClicked ? InteractSubtype.CTA : InteractSubtype.CLOSE_ICON
+        }
         // generate interact telemetry for close popup
-        // this.telemetryGeneratorService.generateInteractTelemetry(
-        //     InteractType.SELECT_CLOSE,
-        //     subtype,
-        //     source === PageId.ONBOARDING_PROFILE_PREFERENCES ? Environment.ONBOARDING : Environment.HOME,
-        //     source === PageId.ONBOARDING_PROFILE_PREFERENCES ? PageId.SCAN_OR_MANUAL : PageId.HOME,
-        //     undefined,
-        //     undefined,
-        //     undefined,
-        //     corRelationList
-        // );
+        this.telemetryGeneratorService.generateInteractTelemetry(
+            InteractType.SELECT_CLOSE,
+            subtype,
+            source === PageId.ONBOARDING_PROFILE_PREFERENCES ? Environment.ONBOARDING : Environment.HOME,
+            source === PageId.ONBOARDING_PROFILE_PREFERENCES ? PageId.SCAN_OR_MANUAL : PageId.HOME,
+            undefined,
+            undefined,
+            undefined,
+            corRelationList
+        );
     }
 
     /**
@@ -561,11 +557,11 @@ export class CommonUtilService {
             profileType === ProfileType.PARENT;
     }
 
-    // public async getGivenPermissionStatus(permissions): Promise<AndroidPermissionsStatus> {
-    //     return (
-    //         await this.permissionService.checkPermissions([permissions]).toPromise()
-    //     )[permissions];
-    // }
+    public async getGivenPermissionStatus(permissions): Promise<AndroidPermissionsStatus> {
+        return (
+            await this.permissionService.checkPermissions([permissions]).toPromise()
+        )[permissions];
+    }
 
     public async showSettingsPageToast(description: string, appName: string, pageId: string, isOnboardingCompleted: boolean) {
         let toast = await this.toastController.create({

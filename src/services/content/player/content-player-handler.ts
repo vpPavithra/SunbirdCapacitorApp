@@ -8,12 +8,11 @@ import { CommonUtilService } from '../../../services/common-util.service';
 import { Environment, InteractSubtype } from '../../../services/telemetry-constants';
 import { TelemetryGeneratorService } from '../../../services/telemetry-generator.service';
 import { ContentUtil } from '../../../util/content-util';
-import { Filesystem } from '@capacitor/filesystem';
 import { Content, CorrelationData, CourseService, InteractType, PlayerService } from '@project-sunbird/sunbird-sdk';
 import { ContentInfo } from '../content-info';
-import {UtilityService} from '../../../services/utility-service';
+// import {UtilityService} from '../../../services/utility-service';
 import { buildConfig } from '../../../environments/environment.stag';
-import { Encoding } from '@capacitor/filesystem';
+import { File } from '@awesome-cordova-plugins/file/ngx';
 
 declare const window;
 
@@ -31,10 +30,11 @@ export class ContentPlayerHandler {
         private router: Router,
         private commonUtilService: CommonUtilService,
         private appHeaderService: AppHeaderService,
-        private utilityService: UtilityService
+        // private utilityService: UtilityService,
+        private file: File
     ) { 
-        Filesystem.checkPermissions();
-        Filesystem.requestPermissions();
+        // Filesystem.checkPermissions();
+        // Filesystem.requestPermissions();
     }
 
     /**
@@ -44,7 +44,7 @@ export class ContentPlayerHandler {
         content: Content, isStreaming: boolean, shouldDownloadnPlay: boolean, contentInfo: ContentInfo, isCourse: boolean, navigateBackToContentDetails?: boolean , isChildContent?: boolean,
         maxAttemptAssessment?: { isLastAttempt: boolean, isContentDisabled: boolean, currentAttempt: number, maxAttempts: number }, callback?) {
         const maxCompatibilityLevel = buildConfig.MAX_COMPATIBILITY_LEVEL;
-         await this.utilityService.getBuildConfigValue(GenericAppConfig.MAX_COMPATIBILITY_LEVEL);
+        //  await this.utilityService.getBuildConfigValue(GenericAppConfig.MAX_COMPATIBILITY_LEVEL);
         if (content.contentData['compatibilityLevel'] > maxCompatibilityLevel) {
             window.cordova.plugins.InAppUpdateManager.checkForImmediateUpdate(
                 () => { },
@@ -100,15 +100,15 @@ export class ContentPlayerHandler {
             }
             this.lastPlayedContentId = content.identifier;
             this.isPlayerLaunched = true;
-
+            console.log('data ', data);
             if (data?.metadata?.mimeType === 'application/vnd.sunbird.questionset' && maxAttemptAssessment) {
                 data['metadata']['contentData']['maxAttempt'] = maxAttemptAssessment?.maxAttempts;
-                data['metadata']['contentData']['currentAttempt'] = maxAttemptAssessment.currentAttempt == undefined ? 0 : maxAttemptAssessment.currentAttempt;
+                data['metadata']['contentData']['currentAttempt'] = maxAttemptAssessment.currentAttempt ?? 0;
             }
             if (data.metadata.mimeType === 'application/vnd.ekstep.ecml-archive') {
-                const filePath = this.commonUtilService.convertFileSrc(`${data.metadata.basePath}`);
+                console.log('streaming ', isStreaming);
                 if (!isStreaming) {
-                    Filesystem.readFile({path: `file://${data.metadata.basePath}/index.ecml`}).then((res) => {
+                    this.file.checkFile(`file://${data.metadata.basePath}/`, 'index.ecml').then((isAvailable) => {
                         this.canvasPlayerService.xmlToJSon(`file://${data.metadata.basePath}/`, 'index.ecml').then(async (json) => {
                             data['data'] = JSON.stringify(json);
                             await this.router.navigate([RouterLinks.PLAYER],
@@ -119,8 +119,8 @@ export class ContentPlayerHandler {
                         });
                     }).catch((err) => {
                         console.error('err', err);
-                        Filesystem.readFile({path: `file://${data.metadata.basePath}/index.json`, encoding: Encoding.UTF8}).then(async (response)=> {
-                            data['data'] = response.data;
+                        this.file.readAsText(`file://${data.metadata.basePath}/`, 'index.json').then(async (response)=> {
+                            data['data'] = response;
                             await this.router.navigate([RouterLinks.PLAYER],
                                 { state: { config: data,  course : contentInfo.course, navigateBackToContentDetails,
                                         corRelation: contentInfo.correlationList, isCourse } });
@@ -163,6 +163,7 @@ export class ContentPlayerHandler {
 
     async playContent(content: Content, navExtras: NavigationExtras, telemetryDetails, isCourse: boolean,
                 navigateBackToContentDetails: boolean = true, hideHeaders: boolean = true) {
+                    console.log('play content handler');
         if (hideHeaders) {
             await this.appHeaderService.hideHeader();
         }

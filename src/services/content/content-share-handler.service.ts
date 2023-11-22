@@ -12,7 +12,6 @@ import { ContentUtil } from '../../util/content-util';
 import { App } from '@capacitor/app';
 import { AppGlobalService } from '../app-global-service.service';
 import { Platform } from '@ionic/angular';
-import { Directory } from '@capacitor/filesystem';
 
 declare var window;
 
@@ -63,7 +62,7 @@ export class ContentShareHandlerService {
       exportContentRequest = {
         contentIds: [rootContentIdentifier],
         subContentIds,
-        destinationFolder: this.platform.is("ios")? Directory.Documents+"content/":this.storageService.getStorageDestinationDirectoryPath()
+        destinationFolder: this.platform.is("ios")? window.cordova.fieldPath.documentsDirectory+"content/":this.storageService.getStorageDestinationDirectoryPath()
       };
       await this.exportContent(exportContentRequest, shareParams, content, corRelationList, rollup, pageId);
     } else if (shareParams && shareParams.byLink && shareParams.link) {
@@ -89,7 +88,7 @@ export class ContentShareHandlerService {
       await Share.share({url: this.platform.is('ios') ? contentLink: shareLink})
       this.appGlobalService.setNativePopupVisible(false, 2000);
     } else if (shareParams && shareParams.saveFile) {
-      const folderPath = this.platform.is('ios') ? Directory.Data: Directory.External
+      const folderPath = this.platform.is('ios') ? window.cordova.file.dataDirectory: window.cordova.file.cacheDirectory
       exportContentRequest = {
         contentIds: [rootContentIdentifier],
         subContentIds,

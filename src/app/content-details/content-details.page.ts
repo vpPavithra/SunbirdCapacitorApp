@@ -76,7 +76,7 @@ import { ContentPlayerHandler } from '../../services/content/player/content-play
 import { ChildContentHandler } from '../../services/content/child-content-handler';
 import { ContentDeleteHandler } from '../../services/content/content-delete-handler';
 import { ContentUtil } from '../../util/content-util';
-// import { FileTransfer, FileTransferObject } from '@awesome-cordova-plugins/file-transfer/ngx';
+import { FileTransfer, FileTransferObject } from '@awesome-cordova-plugins/file-transfer/ngx';
 import { map, filter, take, tap } from 'rxjs/operators';
 import { SbPopoverComponent } from '../components/popups/sb-popover/sb-popover.component';
 import { SbSharePopupComponent } from '../components/popups/sb-share-popup/sb-share-popup.component';
@@ -90,7 +90,6 @@ import { TagPrefixConstants } from '../../services/segmentation-tag/segmentation
 import { DomSanitizer } from '@angular/platform-browser';
 import { ScreenOrientation } from '@capacitor/screen-orientation';
 import { DownloadTranscriptPopupComponent } from '../components/popups/download-transcript-popup/download-transcript-popup.component';
-import { Directory, Filesystem } from '@capacitor/filesystem';
 
 declare const window;
 @Component({
@@ -168,7 +167,7 @@ export class ContentDetailsPage implements OnInit, OnDestroy {
   isSingleContent: boolean;
   resultLength: any;
   course: Course;
-  // fileTransfer: FileTransferObject;
+  fileTransfer: FileTransferObject;
   contentSize: any;
   // Newly Added
   licenseDetails;
@@ -196,6 +195,8 @@ export class ContentDetailsPage implements OnInit, OnDestroy {
   showMoreFlag: any = false;
   navigateBackFlag = false;
   @ViewChild('video') video: ElementRef | undefined;
+
+  screenOrientationType: any;
 
   constructor(
     @Inject('PROFILE_SERVICE') private profileService: ProfileService,
@@ -225,16 +226,19 @@ export class ContentDetailsPage implements OnInit, OnDestroy {
     private contentPlayerHandler: ContentPlayerHandler,
     private childContentHandler: ChildContentHandler,
     private contentDeleteHandler: ContentDeleteHandler,
-    // private transfer: FileTransfer,
+    private transfer: FileTransfer,
     private sbProgressLoader: SbProgressLoader,
     private localCourseService: LocalCourseService,
     private formFrameworkUtilService: FormAndFrameworkUtilService,
-    private sanitizer: DomSanitizer,
-    public screenOrientation: ScreenOrientation
+    private sanitizer: DomSanitizer
   ) {
+    console.log("******* content details page constructor");
     this.subscribePlayEvent();
     this.checkDeviceAPILevel();
     this.checkappAvailability();
+    ScreenOrientation.orientation().then((res) => {
+      this.screenOrientationType = res.type;
+    })
     this.defaultAppIcon = 'assets/imgs/ic_launcher.png';
     this.defaultLicense = ContentConstants.DEFAULT_LICENSE;
     this.ratingHandler.resetRating();
@@ -291,6 +295,7 @@ export class ContentDetailsPage implements OnInit, OnDestroy {
   }
 
   async ngOnInit() {
+    console.log('oninit');
     await this.subscribeEvents();
     this.appLists = await this.formFrameworkUtilService.getFormFields(FormConstants.VENDOR_APPS_CONFIG);
     this.appLists = this.appLists.filter((appData) => {
@@ -447,6 +452,7 @@ export class ContentDetailsPage implements OnInit, OnDestroy {
   }
 
   subscribePlayEvent() {
+    console.log('subscribe event play config');
     this.events.subscribe('playConfig', async (config) => {
       this.appGlobalService.setSelectedUser(config['selectedUser']);
       await this.playContent(config.streaming);
@@ -646,13 +652,13 @@ export class ContentDetailsPage implements OnInit, OnDestroy {
     }
   }
 
-  getImageContent() {
-    if(this.platform.is('ios')) {
-      return this.sanitizer.bypassSecurityTrustUrl(this.content.contentData.appIcon);
-    } else {
-      return this.content.contentData.appIcon;
-    }
-  }
+  // getImageContent() {
+  //   if(this.platform.is('ios')) {
+  //     return this.sanitizer.bypassSecurityTrustUrl(this.content.contentData.appIcon);
+  //   } else {
+  //     return this.content.contentData.appIcon;
+  //   }
+  // }
 
   generateTelemetry(forceGenerate?: boolean) {
     if (!this.didViewLoad && !this.isContentPlayed || forceGenerate) {
@@ -787,7 +793,7 @@ export class ContentDetailsPage implements OnInit, OnDestroy {
    */
   getImportContentRequestBody(identifiers: Array<string>, isChild: boolean): Array<ContentImport> {
     const requestParams = [];
-    const folderPath = this.platform.is('ios') ? Directory.Documents : this.storageService.getStorageDestinationDirectoryPath();
+    const folderPath = this.platform.is('ios') ? window.cordova.file.documentsDirectory : this.storageService.getStorageDestinationDirectoryPath();
    
     identifiers.forEach((value) => {
       requestParams.push({
@@ -1183,6 +1189,7 @@ export class ContentDetailsPage implements OnInit, OnDestroy {
    * Play content
    */
   private async playContent(isStreaming: boolean, loadPlayer: boolean = false) {
+    console.log('play content');
     if (this.apiLevel < 21 && this.appAvailability === 'false' && !this.isIOS) {
       await this.showPopupDialog();
     } else {
@@ -1197,6 +1204,7 @@ export class ContentDetailsPage implements OnInit, OnDestroy {
       if (this.isResumedCourse) {
         this.playingContent.hierarchyInfo = hierachyInfo;
       }
+      console.log('launch content player handle player');
       await this.contentPlayerHandler.launchContentPlayer(this.playingContent, isStreaming,
         this.downloadAndPlay, contentInfo, this.shouldOpenPlayAsPopup , true , this.isChildContent, this.maxAttemptAssessment, 
         loadPlayer ? (val) => this.handlePlayer(val) : undefined);
@@ -1205,6 +1213,7 @@ export class ContentDetailsPage implements OnInit, OnDestroy {
   }
 
   async handlePlayer(playerData) {
+    console.log('handle player ', playerData);
     this.config = playerData.state.config;
     let playerConfig = await this.formFrameworkUtilService.getPdfPlayerConfiguration();
     if (["video/mp4", "video/webm"].includes(playerData.state.config['metadata']['mimeType']) && this.checkIsPlayerEnabled(playerConfig , 'videoPlayer').name === "videoPlayer" &&
@@ -1331,23 +1340,27 @@ export class ContentDetailsPage implements OnInit, OnDestroy {
   }
 
   checkappAvailability() {
-    this.utilityService.checkAppAvailability(XwalkConstants.APP_ID)
-      .then((response: any) => {
-        this.appAvailability = response;
-        console.log('check App availability', this.appAvailability);
-      })
-      .catch((error: any) => {
-        console.error('Error ', error);
-      });
+    console.log('check app availablity');
+    this.appAvailability = 'true'
+  //   this.utilityService.checkAppAvailability(XwalkConstants.APP_ID)
+  //     .then((response: any) => {
+  //       this.appAvailability = response;
+  //       console.log('check App availability', this.appAvailability);
+  //     })
+  //     .catch((error: any) => {
+  //       console.error('Error ', error);
+  //     });
   }
 
   checkDeviceAPILevel() {
-    this.utilityService.getDeviceAPILevel()
-      .then((res: any) => {
-        this.apiLevel = res;
-      }).catch((error: any) => {
-        console.error('Error ', error);
-      });
+    console.log('device api level')
+    this.apiLevel = 33
+    // this.utilityService.getDeviceAPILevel()
+    //   .then((res: any) => {
+    //     this.apiLevel = res;
+    //   }).catch((error: any) => {
+    //     console.error('Error ', error);
+    //   });
   }
 
   async showDeletePopup() {
@@ -1371,9 +1384,9 @@ export class ContentDetailsPage implements OnInit, OnDestroy {
     await this.contentDeleteHandler.showContentDeletePopup(this.content, this.isChildContent, contentInfo, PageId.CONTENT_DETAIL);
   }
 
-  /**
-   * Shares content to external devices
-   */
+  // /**
+  //  * Shares content to external devices
+  //  */
   async share() {
     // when content size and sizeOn device is undefined
     if (!this.content.contentData.size) {
@@ -1398,16 +1411,16 @@ export class ContentDetailsPage implements OnInit, OnDestroy {
    * check if non of these properties exist, then return false
    * else show ViewCreditsComponent
    */
-  async viewCredits() {
-    if (!this.content.contentData.creator && !this.content.contentData.creators) {
-      if (!this.content.contentData.contributors && !this.content.contentData.owner) {
-        if (!this.content.contentData.attributions) {
-          return false;
-        }
-      }
-    }
-    await this.courseUtilService.showCredits(this.content, PageId.CONTENT_DETAIL, this.objRollup, this.corRelationList);
-  }
+  // async viewCredits() {
+  //   if (!this.content.contentData.creator && !this.content.contentData.creators) {
+  //     if (!this.content.contentData.contributors && !this.content.contentData.owner) {
+  //       if (!this.content.contentData.attributions) {
+  //         return false;
+  //       }
+  //     }
+  //   }
+  //   await this.courseUtilService.showCredits(this.content, PageId.CONTENT_DETAIL, this.objRollup, this.corRelationList);
+  // }
 
   /**
    * method generates telemetry on click Read less or Read more
@@ -1566,10 +1579,10 @@ export class ContentDetailsPage implements OnInit, OnDestroy {
 
     try {
       if (!pdf.availableLocally) {
-        // this.fileTransfer = this.transfer.create();
-        // const entry = await this.fileTransfer
-        //   .download(pdf.url, cordova.file.cacheDirectory + pdf.url.substring(pdf.url.lastIndexOf('/') + 1));
-        // url = entry.toURL();
+        this.fileTransfer = this.transfer.create();
+        const entry = await this.fileTransfer
+          .download(pdf.url, window.cordova.file.cacheDirectory + pdf.url.substring(pdf.url.lastIndexOf('/') + 1));
+        url = entry.toURL();
       } else {
         url = 'file://' + pdf.url;
       }
@@ -1734,6 +1747,7 @@ export class ContentDetailsPage implements OnInit, OnDestroy {
   }
 
   playWebVideoContent() {
+    console.log('play web content');
     if (this.playerType === 'sunbird-video-player' && this.config) {
       const playerConfig: any = {
         context: this.config.context,

@@ -69,6 +69,9 @@ export class NavigationService {
     }
 
     async navigateToContent(navExtras) {
+        console.log('navigate to content details');
+        // await this.router.navigate([RouterLinks.CONTENT_DETAILS]);
+
         await this.router.navigate([RouterLinks.CONTENT_DETAILS], {
             state: navExtras
         });

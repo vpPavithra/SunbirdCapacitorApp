@@ -41,7 +41,7 @@ const routes: Routes = [
     resolve: { message: HasNotSelectedFrameworkGuard }
   },
   {
-    path: `${RouterLinks.TABS}`,
+    path: RouterLinks.TABS,
     loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsPageModule)
   },
   {
@@ -70,8 +70,8 @@ const routes: Routes = [
     path: RouterLinks.COLLECTION_DETAIL_ETB,
     loadChildren: () => import('./collection-detail-etb/collection-detail-etb.module').then(m => m.CollectionDetailEtbPageModule)
   },
-  { path: `${RouterLinks.CONTENT_DETAILS}/:id`, loadChildren: () => import('./content-details/content-details.module').then(m => m.ContentDetailsPageModule) },
   { path: RouterLinks.CONTENT_DETAILS, loadChildren: () => import('./content-details/content-details.module').then(m => m.ContentDetailsPageModule) },
+  { path: `${RouterLinks.CONTENT_DETAILS}/:id`, loadChildren: () => import('./content-details/content-details.module').then(m => m.ContentDetailsPageModule) },
   { path: RouterLinks.PLAYER, loadChildren: () => import('./player/player.module').then(m => m.PlayerPageModule) },
   { path: RouterLinks.PAGE_FILTER, loadChildren: () => import('./page-filter/page-filter.module').then(m => m.PageFilterPageModule) },
   {
@@ -106,7 +106,7 @@ const routes: Routes = [
   // },
 
   // { path: RouterLinks.OBSERVATION, loadChildren: () => import('./manage-learn/observation/observation.module').then(m => m.ObservationModule) , canActivate:[MlGuard]},
-  { path: RouterLinks.CATEGORY_LIST, loadChildren: () => import('./category-list/category-list-page.module').then(m => m.CategoryListPageModule)},
+  { path: RouterLinks.CATEGORY_LIST, loadChildren: () => import('./category-list/category-list-page.module').then(m => m.CategoryListPageModule) },
   { path: RouterLinks.GUEST_PROFILE, loadChildren: () => import('./profile/guest-profile/guest-profile.module').then(m => m.GuestProfilePageModule) },
   // { path: RouterLinks.ECM_LISTING, loadChildren: () => import('./manage-learn/ecm-listing/ecm-listing.module').then(m => m.EcmListingPageModule) },
   // { path: RouterLinks.SECTION_LISTING, loadChildren: () => import('./manage-learn/section-listing/section-listing.module').then(m => m.SectionListingPageModule) },
@@ -115,6 +115,7 @@ const routes: Routes = [
   // { path: RouterLinks.ALL_EVIDENCE, loadChildren: () => import('./manage-learn/all-evidence-list/all-evidence-list.module').then(m => m.AllEvidenceListModule) },
   // { path: RouterLinks.PROJECT_REPORT, loadChildren: () => import('./manage-learn/project-report/project-report.module').then(m => m.ProjectReportModule) },
   // { path: `${RouterLinks.DEEPLINK_REDIRECT}/:extra`, loadChildren: () => import('./manage-learn/deeplink-redirect/deeplink-redirect.module').then(m => m.DeeplinkRedirectModule) },
+  { path: RouterLinks.CATEGORY_LIST, loadChildren: () => import('./category-list/category-list-page.module').then(m => m.CategoryListPageModule)},
   { path: RouterLinks.GUEST_PROFILE, loadChildren: () => import('./profile/guest-profile/guest-profile.module').then(m => m.GuestProfilePageModule) },
   { path: RouterLinks.DISCUSSION, loadChildren: () => import('./discussion-forum/discussion-forum.module').then(m => m.DiscussionForumModule) },
   { path: RouterLinks.SEARCH_FILTER, loadChildren: () => import('./search-filter/search-filter.module').then(m => m.SearchFilterPageModule) },
@@ -150,8 +151,7 @@ const routes: Routes = [
     HasNotSelectedLanguageGuard,
     HasNotSelectedUserTypeGuard,
     HasNotSelectedFrameworkGuard,
-    IsGuestUserGuard
-  ],
+    IsGuestUserGuard],
     schemas: [
       CUSTOM_ELEMENTS_SCHEMA
     ]

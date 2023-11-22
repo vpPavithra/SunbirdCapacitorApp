@@ -6,8 +6,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 // ionic cordova dependencies/plugins
 // import { Device } from '@awesome-cordova-plugins/device/ngx';
 // import { FileOpener } from '@awesome-cordova-plugins/file-opener/ngx';
-// import { FileTransfer, FileTransferObject } from '@awesome-cordova-plugins/file-transfer/ngx';
-// import { File } from '@awesome-cordova-plugins/file/ngx';
+import { FileTransfer, FileTransferObject } from '@awesome-cordova-plugins/file-transfer/ngx';
+import { File } from '@awesome-cordova-plugins/file/ngx';
 // import {GooglePlus} from '@awesome-cordova-plugins/google-plus/ngx';
 // import { WebView } from '@awesome-cordova-plugins/ionic-webview/ngx';
 // import { Camera } from '@awesome-cordova-plugins/camera/ngx';
@@ -42,20 +42,20 @@ import { UtilityService } from '../services/utility-service';
 import { AppHeaderService } from '../services/app-header.service';
 import { AppRatingService } from '../services/app-rating.service';
 import { CollectionService } from '../services/collection.service';
-// import { AndroidPermissionsService } from '../services/android-permissions/android-permissions.service';
+import { AndroidPermissionsService } from '../services/android-permissions/android-permissions.service';
 import { ComingSoonMessageService } from '../services/coming-soon-message.service';
 import { ActivePageService } from '../services/active-page/active-page-service';
 import { CanvasPlayerService } from '../services/canvas-player.service';
-// import { SplashScreenService } from '../services/splash-screen.service';
+import { SplashScreenService } from '../services/splash-screen.service';
 import { GroupHandlerService } from '../services/group/group-handler.service';
 import { ContentAggregatorHandler } from '../services/content/content-aggregator-handler.service';
 import { NotificationService } from '../services/notification.service';
 import { TncUpdateHandlerService } from '../services/handlers/tnc-update-handler.service';
-// import {
-//   SplashcreenTelemetryActionHandlerDelegate
-// } from '../services/sunbird-splashscreen/splashcreen-telemetry-action-handler-delegate';
-// import { SplashscreenImportActionHandlerDelegate } from '../services/sunbird-splashscreen/splashscreen-import-action-handler-delegate';
-// import { SplaschreenDeeplinkActionHandlerDelegate } from '../services/sunbird-splashscreen/splaschreen-deeplink-action-handler-delegate';
+import {
+  SplashcreenTelemetryActionHandlerDelegate
+} from '../services/sunbird-splashscreen/splashcreen-telemetry-action-handler-delegate';
+import { SplashscreenImportActionHandlerDelegate } from '../services/sunbird-splashscreen/splashscreen-import-action-handler-delegate';
+import { SplaschreenDeeplinkActionHandlerDelegate } from '../services/sunbird-splashscreen/splaschreen-deeplink-action-handler-delegate';
 import { LocalCourseService } from '../services/local-course.service';
 import { ExternalIdVerificationService } from '../services/externalid-verification.service';
 import { NavigationService } from '../services/navigation-handler.service';
@@ -522,10 +522,10 @@ declare const sbutility;
     ],
     providers: [
         // WebView,
-        // File,
-        // FileTransferObject,
+        File,
+        FileTransferObject,
         // FileOpener,
-        // FileTransfer,
+        FileTransfer,
         AppGlobalService,
         CourseUtilService,
         TelemetryGeneratorService,
@@ -545,14 +545,14 @@ declare const sbutility;
         PrintPdfService,
         CollectionService,
         // Device,
-        // AndroidPermissionsService,
+        AndroidPermissionsService,
         ComingSoonMessageService,
         ActivePageService,
         CanvasPlayerService,
-        // SplashcreenTelemetryActionHandlerDelegate,
-        // SplashscreenImportActionHandlerDelegate,
-        // SplaschreenDeeplinkActionHandlerDelegate,
-        // SplashScreenService,
+        SplashcreenTelemetryActionHandlerDelegate,
+        SplashscreenImportActionHandlerDelegate,
+        SplaschreenDeeplinkActionHandlerDelegate,
+        SplashScreenService,
         ExternalIdVerificationService,
         TextbookTocService,
         GroupHandlerService,

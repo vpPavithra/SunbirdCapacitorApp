@@ -24,6 +24,7 @@ import {
 import { SbPopoverComponent } from '../components/popups/sb-popover/sb-popover.component';
 import { EnrollCourse } from '../enrolled-course-details-page/course.interface';
 import { TelemetryGeneratorService } from './../../services/telemetry-generator.service';
+import dayjs from 'dayjs';
 
 declare const window;
 @Component({
@@ -82,7 +83,7 @@ export class CourseBatchesPage implements OnInit, ConsentPopoverActionsDelegate 
   }
 
   async ngOnInit() {
-    this.todayDate = window.dayjs().format('YYYY-MM-DD');
+    this.todayDate = dayjs().format('YYYY-MM-DD');
     this.userId = await this.appGlobalService.getActiveProfileUid();
     this.isGuestUser = !this.appGlobalService.isUserLoggedIn();
   }

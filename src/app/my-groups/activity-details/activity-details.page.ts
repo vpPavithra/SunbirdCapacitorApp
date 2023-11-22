@@ -10,7 +10,7 @@ import { AppHeaderService } from '../../../services/app-header.service';
 import { CommonUtilService } from '../../../services/common-util.service';
 import { TelemetryGeneratorService } from '../../../services/telemetry-generator.service';
 import { CollectionService } from '../../../services/collection.service';
-// import { AndroidPermissionsService } from '../../../services/android-permissions/android-permissions.service';
+import { AndroidPermissionsService } from '../../../services/android-permissions/android-permissions.service';
 import {
   GroupService, GroupMember, Content,
   Group, MimeType, CorrelationData, TrackingEnabled
@@ -22,11 +22,12 @@ import { Platform } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { RouterLinks } from './../../app.constant';
 import { CsContentType } from '@project-sunbird/client-services/services/content';
-// import { File } from '@awesome-cordova-plugins/file/ngx';
-// import { AndroidPermission, AndroidPermissionsStatus } from '../../../services/android-permissions/android-permission';
+import { File } from '@awesome-cordova-plugins/file/ngx';
+import { AndroidPermission, AndroidPermissionsStatus } from '../../../services/android-permissions/android-permission';
 import { FileOpener } from '@capacitor-community/file-opener';
 import { App } from '@capacitor/app';
-import { Directory, Filesystem } from '@capacitor/filesystem';
+
+declare var window;
 @Component({
   selector: 'app-activity-details',
   templateUrl: './activity-details.page.html',
@@ -65,8 +66,8 @@ export class ActivityDetailsPage implements OnInit, OnDestroy {
     private platform: Platform,
     private collectionService: CollectionService,
     private appGlobalService: AppGlobalService,
-    // private file: File,
-    // private permissionService: AndroidPermissionsService,
+    private file: File,
+    private permissionService: AndroidPermissionsService,
   ) {
     const extras = this.router.getCurrentNavigation().extras.state;
     this.loggedinUser = extras.loggedinUser;
@@ -235,10 +236,10 @@ export class ActivityDetailsPage implements OnInit, OnDestroy {
     const expTime = new Date().getTime();
     const csvData: any = this.convertToCSV(this.memberList);
     const filename = this.courseData.name.trim() + '_' + expTime + '.csv';
-    const folderPath = this.platform.is('ios') ? Directory.Documents : Directory.External
+    const folderPath = this.platform.is('ios') ? window.cordova.file.documentsDirectory : window.cordova.file.cacheDirectory
     const downloadDirectory = `${folderPath}Download/`;
-    Filesystem.writeFile({path: "Downlaods/"+filename, data: csvData, directory: folderPath})
-    // this.file.writeFile(downloadDirectory, filename, csvData, {replace: true})
+    // Filesystem.writeFile({path: "Downlaods/"+filename, data: csvData, directory: folderPath})
+    this.file.writeFile(downloadDirectory, filename, csvData, {replace: true})
     .then((res)=> {
       console.log('rs write file', res);
       this.openCsv(res.uri)
@@ -256,21 +257,21 @@ export class ActivityDetailsPage implements OnInit, OnDestroy {
       });
     }
     return new Promise<boolean | undefined>(async (resolve) => {
-      // const permissionStatus = await this.commonUtilService.getGivenPermissionStatus(AndroidPermission.WRITE_EXTERNAL_STORAGE);
-      // if (permissionStatus.hasPermission) {
-      //   resolve(true);
-      // } else if (permissionStatus.isPermissionAlwaysDenied) {
-      //   await this.commonUtilService.showSettingsPageToast('FILE_MANAGER_PERMISSION_DESCRIPTION', this.appName, PageId.PROFILE, true);
-      //   resolve(false);
-      // } else {
-      //   this.showStoragePermissionPopover().then((result) => {
-      //     if (result) {
-      //       resolve(true);
-      //     } else {
-      //       resolve(false);
-      //     }
-      //   }).catch(e => console.error(e));
-      // }
+      const permissionStatus = await this.commonUtilService.getGivenPermissionStatus(AndroidPermission.WRITE_EXTERNAL_STORAGE);
+      if (permissionStatus.hasPermission) {
+        resolve(true);
+      } else if (permissionStatus.isPermissionAlwaysDenied) {
+        await this.commonUtilService.showSettingsPageToast('FILE_MANAGER_PERMISSION_DESCRIPTION', this.appName, PageId.PROFILE, true);
+        resolve(false);
+      } else {
+        this.showStoragePermissionPopover().then((result) => {
+          if (result) {
+            resolve(true);
+          } else {
+            resolve(false);
+          }
+        }).catch(e => console.error(e));
+      }
     });
   }
 
@@ -287,20 +288,20 @@ export class ActivityDetailsPage implements OnInit, OnDestroy {
               InteractSubtype.ALLOW_CLICKED,
               Environment.SETTINGS,
               PageId.PERMISSION_POPUP);
-            // this.permissionService.requestPermission(AndroidPermission.WRITE_EXTERNAL_STORAGE).subscribe(async (status: AndroidPermissionsStatus) => {
-            //     if (status.hasPermission) {
-            //       this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH, InteractSubtype.ALLOW_CLICKED, Environment.SETTINGS, PageId.APP_PERMISSION_POPUP);
-            //       resolve(true);
-            //     } else if (status.isPermissionAlwaysDenied) {
-            //       await this.commonUtilService.showSettingsPageToast
-            //         ('FILE_MANAGER_PERMISSION_DESCRIPTION', this.appName, PageId.PROFILE, true);
-            //       resolve(false);
-            //     } else {
-            //       this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH, InteractSubtype.DENY_CLICKED, Environment.SETTINGS, PageId.APP_PERMISSION_POPUP);
-            //       await this.commonUtilService.showSettingsPageToast('FILE_MANAGER_PERMISSION_DESCRIPTION', this.appName, PageId.PROFILE, true);
-            //     }
-            //     resolve(undefined);
-            //   });
+            this.permissionService.requestPermission(AndroidPermission.WRITE_EXTERNAL_STORAGE).subscribe(async (status: AndroidPermissionsStatus) => {
+                if (status.hasPermission) {
+                  this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH, InteractSubtype.ALLOW_CLICKED, Environment.SETTINGS, PageId.APP_PERMISSION_POPUP);
+                  resolve(true);
+                } else if (status.isPermissionAlwaysDenied) {
+                  await this.commonUtilService.showSettingsPageToast
+                    ('FILE_MANAGER_PERMISSION_DESCRIPTION', this.appName, PageId.PROFILE, true);
+                  resolve(false);
+                } else {
+                  this.telemetryGeneratorService.generateInteractTelemetry(InteractType.TOUCH, InteractSubtype.DENY_CLICKED, Environment.SETTINGS, PageId.APP_PERMISSION_POPUP);
+                  await this.commonUtilService.showSettingsPageToast('FILE_MANAGER_PERMISSION_DESCRIPTION', this.appName, PageId.PROFILE, true);
+                }
+                resolve(undefined);
+              });
           }
         }, this.appName, this.commonUtilService.translateMessage('FILE_MANAGER'), 'FILE_MANAGER_PERMISSION_DESCRIPTION', PageId.PROFILE, true
       );

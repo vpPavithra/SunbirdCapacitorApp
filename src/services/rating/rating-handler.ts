@@ -1,8 +1,7 @@
 import { Inject, Injectable } from '@angular/core';
 import * as  dayjs from 'dayjs';
-import { Directory, Filesystem } from '@capacitor/filesystem';
 import { SharedPreferences, Content, CorrelationData, Rollup, TelemetryObject } from '@project-sunbird/sunbird-sdk';
-
+import { File } from '@awesome-cordova-plugins/file/ngx';
 import { CommonUtilService } from '../../services/common-util.service';
 import { TelemetryGeneratorService } from '../../services/telemetry-generator.service';
 import { InteractType, InteractSubtype, Environment, PageId } from '../../services/telemetry-constants';
@@ -14,6 +13,7 @@ import { AppGlobalService } from '../../services/app-global-service.service';
 import { ContentUtil } from '../../util/content-util';
 import { Router } from '@angular/router';
 
+declare var window;
 @Injectable({
     providedIn: 'root'
 })
@@ -27,6 +27,7 @@ export class RatingHandler {
     constructor(
         @Inject('SHARED_PREFERENCES') private preferences: SharedPreferences,
         private popoverCtrl: PopoverController,
+        private fileCtrl: File,
         private commonUtilService: CommonUtilService,
         private telemetryGeneratorService: TelemetryGeneratorService,
         private appGlobalService: AppGlobalService,
@@ -168,21 +169,21 @@ export class RatingHandler {
     }
 
     readRatingFile(): Promise<boolean> {
-        Filesystem.requestPermissions();
-        return Filesystem.readFile({path: '/' + StoreRating.FOLDER_NAME+ '/' + StoreRating.FILE_NAME, directory: Directory.Data})
-        .then(() => {
-            return true;
-        })
-        .catch(() => {
-            return false;
-        });
-        // return this.fileCtrl.readAsText(cordova.file.dataDirectory + '/' + StoreRating.FOLDER_NAME, StoreRating.FILE_NAME)
-        //     .then(() => {
-        //         return true;
-        //     })
-        //     .catch(() => {
-        //         return false;
-        //     });
+        // Filesystem.requestPermissions();
+        // return Filesystem.readFile({path: '/' + StoreRating.FOLDER_NAME+ '/' + StoreRating.FILE_NAME, directory: Directory.Data})
+        // .then(() => {
+        //     return true;
+        // })
+        // .catch(() => {
+        //     return false;
+        // });
+        return this.fileCtrl.readAsText(window.cordova.file.dataDirectory + '/' + StoreRating.FOLDER_NAME, StoreRating.FILE_NAME)
+            .then(() => {
+                return true;
+            })
+            .catch(() => {
+                return false;
+            });
     }
 
 }

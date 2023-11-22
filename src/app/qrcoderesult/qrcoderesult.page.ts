@@ -47,7 +47,6 @@ import {
   AuditType, ImpressionSubtype
 } from '../../services/telemetry-constants';
 import { CanvasPlayerService } from '../../services/canvas-player.service';
-import { Directory, Filesystem } from '@capacitor/filesystem';
 import { AppHeaderService } from '../../services/app-header.service';
 import { Location } from '@angular/common';
 import { NavigationExtras, Router } from '@angular/router';
@@ -747,7 +746,7 @@ export class QrcoderesultPage implements OnDestroy {
 
   getImportContentRequestBody(identifiers: Array<string>, isChild: boolean): Array<ContentImport> {
     const requestParams = [];
-    const folderPath = this.platform.is('ios') ? Directory.Documents : Directory.Data;
+    const folderPath = this.platform.is('ios') ? window.cordova.file.documentsDirectory : window.cordova.file.dataDirectory;
     identifiers.forEach((value) => {
       requestParams.push({
         isChildContent: isChild,

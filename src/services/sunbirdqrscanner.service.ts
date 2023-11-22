@@ -3,14 +3,14 @@ import { NavigationExtras, Router } from '@angular/router';
 import { QrScannerIOSComponent } from '../app/components/qr-scanner-ios/qr-scanner-ios.component';
 import { GUEST_STUDENT_TABS, GUEST_TEACHER_TABS, initTabs } from '../app/module.service';
 import { AppGlobalService } from '../services/app-global-service.service';
-// import { AndroidPermissionsService } from '../services/android-permissions/android-permissions.service';
+import { AndroidPermissionsService } from '../services/android-permissions/android-permissions.service';
 import { ContainerService } from '../services/container.services';
 import { App } from '@capacitor/app';
 import { ModalController, Platform } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { take } from 'rxjs/operators';
 import { CorrelationData, Profile, ProfileType, TelemetryObject } from '@project-sunbird/sunbird-sdk';
-// import { AndroidPermission, AndroidPermissionsStatus, PermissionAskedEnum } from './android-permissions/android-permission';
+import { AndroidPermission, AndroidPermissionsStatus, PermissionAskedEnum } from './android-permissions/android-permission';
 import {
   CorReleationDataType, Environment,
   ImpressionSubtype,
@@ -51,7 +51,7 @@ export class SunbirdQRScanner {
     private telemetryGeneratorService: TelemetryGeneratorService,
     private appGlobalService: AppGlobalService,
     private container: ContainerService,
-    // private permission: AndroidPermissionsService,
+    private permission: AndroidPermissionsService,
     private commonUtilService: CommonUtilService,
     private router: Router,
     private modalCtrl: ModalController,
@@ -104,20 +104,20 @@ export class SunbirdQRScanner {
             }).catch(e => console.error(e));
           }
         })
-        // const permissionStatus = await this.commonUtilService.getGivenPermissionStatus(AndroidPermission.CAMERA);
-        // if (permissionStatus.hasPermission) {
-        //   resolve(this.startQRScanner(screenTitle, displayText, displayTextColor, buttonText, showButton, source));
-        // } else if (permissionStatus.isPermissionAlwaysDenied) {
-        //   await this.commonUtilService.showSettingsPageToast('CAMERA_PERMISSION_DESCRIPTION', this.appName, PageId.QRCodeScanner, false);
-        // } else {
-        //   this.showPopover(source).then((result) => {
-        //     if (result) {
-        //       resolve(result);
-        //     } else {
-        //       resolve(undefined);
-        //     }
-        //   }).catch(e => console.error(e));
-        // }
+        const permissionStatus = await this.commonUtilService.getGivenPermissionStatus(AndroidPermission.CAMERA);
+        if (permissionStatus.hasPermission) {
+          resolve(this.startQRScanner(screenTitle, displayText, displayTextColor, buttonText, showButton, source));
+        } else if (permissionStatus.isPermissionAlwaysDenied) {
+          await this.commonUtilService.showSettingsPageToast('CAMERA_PERMISSION_DESCRIPTION', this.appName, PageId.QRCodeScanner, false);
+        } else {
+          this.showPopover(source).then((result) => {
+            if (result) {
+              resolve(result);
+            } else {
+              resolve(undefined);
+            }
+          }).catch(e => console.error(e));
+        }
       }
     });
   }
@@ -140,36 +140,36 @@ export class SunbirdQRScanner {
                 InteractSubtype.ALLOW_CLICKED,
                 pageId === PageId.ONBOARDING_PROFILE_PREFERENCES ? Environment.ONBOARDING : Environment.HOME,
                 PageId.PERMISSION_POPUP);
-            // this.appGlobalService.setIsPermissionAsked(PermissionAskedEnum.isCameraAsked, true);
-            // this.appGlobalService.isNativePopupVisible = true;
-            // this.permission.requestPermissions([AndroidPermission.CAMERA]).subscribe(async (status: AndroidPermissionsStatus) => {
-            //   if (status && status.hasPermission) {
-            //       this.telemetryGeneratorService.generateInteractTelemetry(
-            //           InteractType.TOUCH,
-            //           InteractSubtype.ALLOW_CLICKED,
-            //           pageId === PageId.ONBOARDING_PROFILE_PREFERENCES ? Environment.ONBOARDING : Environment.HOME,
-            //           PageId.APP_PERMISSION_POPUP
-            //       );
-            //       this.startScanner(this.source, this.showButton).then((result) => {
-            //         if (result) {
-            //           resolve(result);
-            //         } else {
-            //           resolve(undefined);
-            //         }
-            //         this.appGlobalService.isNativePopupVisible = false;
-            //       }).catch(e => console.error(e));
-            //   } else {
-            //       this.telemetryGeneratorService.generateInteractTelemetry(
-            //           InteractType.TOUCH,
-            //           InteractSubtype.DENY_CLICKED,
-            //           pageId === PageId.ONBOARDING_PROFILE_PREFERENCES ? Environment.ONBOARDING : Environment.HOME,
-            //           PageId.APP_PERMISSION_POPUP
-            //       );
-            //       await this.commonUtilService.showSettingsPageToast
-            //     ('CAMERA_PERMISSION_DESCRIPTION', this.appName, PageId.QRCodeScanner, this.appGlobalService.isOnBoardingCompleted);
-            //       this.appGlobalService.setNativePopupVisible(false, 1000);
-            //   }
-            // }, (e) => { reject(e); });
+            this.appGlobalService.setIsPermissionAsked(PermissionAskedEnum.isCameraAsked, true);
+            this.appGlobalService.isNativePopupVisible = true;
+            this.permission.requestPermissions([AndroidPermission.CAMERA]).subscribe(async (status: AndroidPermissionsStatus) => {
+              if (status && status.hasPermission) {
+                  this.telemetryGeneratorService.generateInteractTelemetry(
+                      InteractType.TOUCH,
+                      InteractSubtype.ALLOW_CLICKED,
+                      pageId === PageId.ONBOARDING_PROFILE_PREFERENCES ? Environment.ONBOARDING : Environment.HOME,
+                      PageId.APP_PERMISSION_POPUP
+                  );
+                  this.startScanner(this.source, this.showButton).then((result) => {
+                    if (result) {
+                      resolve(result);
+                    } else {
+                      resolve(undefined);
+                    }
+                    this.appGlobalService.isNativePopupVisible = false;
+                  }).catch(e => console.error(e));
+              } else {
+                  this.telemetryGeneratorService.generateInteractTelemetry(
+                      InteractType.TOUCH,
+                      InteractSubtype.DENY_CLICKED,
+                      pageId === PageId.ONBOARDING_PROFILE_PREFERENCES ? Environment.ONBOARDING : Environment.HOME,
+                      PageId.APP_PERMISSION_POPUP
+                  );
+                  await this.commonUtilService.showSettingsPageToast
+                ('CAMERA_PERMISSION_DESCRIPTION', this.appName, PageId.QRCodeScanner, this.appGlobalService.isOnBoardingCompleted);
+                  this.appGlobalService.setNativePopupVisible(false, 1000);
+              }
+            }, (e) => { reject(e); });
           }
         }, this.appName, this.commonUtilService.translateMessage('CAMERA'), 'CAMERA_PERMISSION_DESCRIPTION', PageId.QRCodeScanner,
           this.appGlobalService.isOnBoardingCompleted

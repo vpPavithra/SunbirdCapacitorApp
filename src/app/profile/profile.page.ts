@@ -62,11 +62,11 @@ import {
   AccountRecoveryInfoComponent
 } from '../components/popups/account-recovery-id/account-recovery-id-popup.component';
 import { Share } from '@capacitor/share';
-// import { AndroidPermissionsService } from '../../services/android-permissions/android-permissions.service';
-// import {
-//   AndroidPermissionsStatus,
-//   AndroidPermission
-// } from '../../services/android-permissions/android-permission';
+import { AndroidPermissionsService } from '../../services/android-permissions/android-permissions.service';
+import {
+  AndroidPermissionsStatus,
+  AndroidPermission
+} from '../../services/android-permissions/android-permission';
 import { App } from '@capacitor/app';
 import { SbProgressLoader } from '../../services/sb-progress-loader.service';
 import { FileOpener } from '@capacitor-community/file-opener';
@@ -192,7 +192,7 @@ export class ProfilePage implements OnInit {
     private formAndFrameworkUtilService: FormAndFrameworkUtilService,
     public commonUtilService: CommonUtilService,
     private headerService: AppHeaderService,
-    // private permissionService: AndroidPermissionsService,
+    private permissionService: AndroidPermissionsService,
     private navService: NavigationService,
     private sbProgressLoader: SbProgressLoader,
     private toastController: ToastController,
@@ -1104,21 +1104,21 @@ export class ProfilePage implements OnInit {
       });
     }
     return new Promise<boolean | undefined>(async (resolve) => {
-      // const permissionStatus = await this.commonUtilService.getGivenPermissionStatus(AndroidPermission.WRITE_EXTERNAL_STORAGE);
-      // if (permissionStatus.hasPermission) {
-      //   resolve(true);
-      // } else if (permissionStatus.isPermissionAlwaysDenied) {
-      //   await this.commonUtilService.showSettingsPageToast('FILE_MANAGER_PERMISSION_DESCRIPTION', this.appName, PageId.PROFILE, true);
-      //   resolve(false);
-      // } else {
-      //   this.showStoragePermissionPopup().then((result) => {
-      //     if (result) {
-      //       resolve(true);
-      //     } else {
-      //       resolve(false);
-      //     }
-      //   }).catch(err => console.error(err));
-      // }
+      const permissionStatus = await this.commonUtilService.getGivenPermissionStatus(AndroidPermission.WRITE_EXTERNAL_STORAGE);
+      if (permissionStatus.hasPermission) {
+        resolve(true);
+      } else if (permissionStatus.isPermissionAlwaysDenied) {
+        await this.commonUtilService.showSettingsPageToast('FILE_MANAGER_PERMISSION_DESCRIPTION', this.appName, PageId.PROFILE, true);
+        resolve(false);
+      } else {
+        this.showStoragePermissionPopup().then((result) => {
+          if (result) {
+            resolve(true);
+          } else {
+            resolve(false);
+          }
+        }).catch(err => console.error(err));
+      }
     });
   }
 
@@ -1140,33 +1140,33 @@ export class ProfilePage implements OnInit {
               Environment.SETTINGS,
               PageId.PERMISSION_POPUP);
             this.appGlobalService.isNativePopupVisible = true;
-            // this.permissionService.requestPermission(AndroidPermission.WRITE_EXTERNAL_STORAGE)
-            //   .subscribe(async (status: AndroidPermissionsStatus) => {
-            //     if (status.hasPermission) {
-            //       this.telemetryGeneratorService.generateInteractTelemetry(
-            //         InteractType.TOUCH,
-            //         InteractSubtype.ALLOW_CLICKED,
-            //         Environment.SETTINGS,
-            //         PageId.APP_PERMISSION_POPUP
-            //       );
-            //       resolve(true);
-            //     } else if (status.isPermissionAlwaysDenied) {
-            //       await this.commonUtilService.showSettingsPageToast
-            //         ('FILE_MANAGER_PERMISSION_DESCRIPTION', this.appName, PageId.PROFILE, true);
-            //       resolve(false);
-            //     } else {
-            //       this.telemetryGeneratorService.generateInteractTelemetry(
-            //         InteractType.TOUCH,
-            //         InteractSubtype.DENY_CLICKED,
-            //         Environment.SETTINGS,
-            //         PageId.APP_PERMISSION_POPUP
-            //       );
-            //       await this.commonUtilService.showSettingsPageToast
-            //         ('FILE_MANAGER_PERMISSION_DESCRIPTION', this.appName, PageId.PROFILE, true);
-            //     }
-            //     this.appGlobalService.setNativePopupVisible(false);
-            //     resolve(undefined);
-            //   });
+            this.permissionService.requestPermission(AndroidPermission.WRITE_EXTERNAL_STORAGE)
+              .subscribe(async (status: AndroidPermissionsStatus) => {
+                if (status.hasPermission) {
+                  this.telemetryGeneratorService.generateInteractTelemetry(
+                    InteractType.TOUCH,
+                    InteractSubtype.ALLOW_CLICKED,
+                    Environment.SETTINGS,
+                    PageId.APP_PERMISSION_POPUP
+                  );
+                  resolve(true);
+                } else if (status.isPermissionAlwaysDenied) {
+                  await this.commonUtilService.showSettingsPageToast
+                    ('FILE_MANAGER_PERMISSION_DESCRIPTION', this.appName, PageId.PROFILE, true);
+                  resolve(false);
+                } else {
+                  this.telemetryGeneratorService.generateInteractTelemetry(
+                    InteractType.TOUCH,
+                    InteractSubtype.DENY_CLICKED,
+                    Environment.SETTINGS,
+                    PageId.APP_PERMISSION_POPUP
+                  );
+                  await this.commonUtilService.showSettingsPageToast
+                    ('FILE_MANAGER_PERMISSION_DESCRIPTION', this.appName, PageId.PROFILE, true);
+                }
+                this.appGlobalService.setNativePopupVisible(false);
+                resolve(undefined);
+              });
           }
         }, this.appName, this.commonUtilService.translateMessage
         ('FILE_MANAGER'), 'FILE_MANAGER_PERMISSION_DESCRIPTION', PageId.PROFILE, true

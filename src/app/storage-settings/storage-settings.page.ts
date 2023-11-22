@@ -19,8 +19,8 @@ import { SbPopoverComponent } from '../../app/components/popups/sb-popover/sb-po
 import { FileSizePipe } from '../../pipes/file-size/file-size';
 import { ImpressionType, Environment, PageId, InteractType, InteractSubtype, } from '../../services/telemetry-constants';
 import { App, AppInfo } from '@capacitor/app';
-// import { AndroidPermissionsService } from 'services/android-permissions/android-permissions.service';
-// import { AndroidPermission, AndroidPermissionsStatus } from 'services/android-permissions/android-permission';
+import { AndroidPermissionsService } from 'services/android-permissions/android-permissions.service';
+import { AndroidPermission, AndroidPermissionsStatus } from 'services/android-permissions/android-permission';
 import { Location } from '@angular/common';
 import { featureIdMap } from '../feature-id-map';
 import { mergeMap, map, filter , takeWhile, take, startWith, tap} from 'rxjs/operators';
@@ -87,7 +87,7 @@ export class StorageSettingsPage implements OnInit {
     private fileSizePipe: FileSizePipe,
     private changeDetectionRef: ChangeDetectorRef,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    // private permissionsService: AndroidPermissionsService,
+    private permissionsService: AndroidPermissionsService,
     private location: Location,
     @Inject('EVENTS_BUS_SERVICE') private eventsBusService: EventsBusService,
     @Inject('STORAGE_SERVICE') private storageService: StorageService,
@@ -124,17 +124,17 @@ export class StorageSettingsPage implements OnInit {
       return;
     }
 
-    // const permissionStatus = await this.commonUtilService.getGivenPermissionStatus(AndroidPermission.WRITE_EXTERNAL_STORAGE);
+    const permissionStatus = await this.commonUtilService.getGivenPermissionStatus(AndroidPermission.WRITE_EXTERNAL_STORAGE);
 
-    // if (permissionStatus.hasPermission) {
-    //   await this.showShouldTransferContentsPopup();
-    // } else if (permissionStatus.isPermissionAlwaysDenied) {
-    //   this.revertSelectedStorageDestination();
-    //   await this.commonUtilService.showSettingsPageToast
-    //   ('FILE_MANAGER_PERMISSION_DESCRIPTION', this.appName, PageId.TRANSFERING_CONTENT_POPUP, false);
-    // } else {
-    //   await this.showStoragePermissionPopup();
-    // }
+    if (permissionStatus.hasPermission) {
+      await this.showShouldTransferContentsPopup();
+    } else if (permissionStatus.isPermissionAlwaysDenied) {
+      this.revertSelectedStorageDestination();
+      await this.commonUtilService.showSettingsPageToast
+      ('FILE_MANAGER_PERMISSION_DESCRIPTION', this.appName, PageId.TRANSFERING_CONTENT_POPUP, false);
+    } else {
+      await this.showStoragePermissionPopup();
+    }
   }
 
   private initAppHeader() {
@@ -197,18 +197,18 @@ export class StorageSettingsPage implements OnInit {
                 InteractSubtype.ALLOW_CLICKED,
                 Environment.HOME,
                 PageId.PERMISSION_POPUP);
-            // this.permissionsService.requestPermission(AndroidPermission.WRITE_EXTERNAL_STORAGE)
-            //     .subscribe(async (status: AndroidPermissionsStatus) => {
-            //       if (status.hasPermission) {
-            //         await this.showShouldTransferContentsPopup();
-            //       } else if (status.isPermissionAlwaysDenied) {
-            //         this.revertSelectedStorageDestination();
-            //         await this.commonUtilService.showSettingsPageToast
-            //         ('FILE_MANAGER_PERMISSION_DESCRIPTION', this.appName, PageId.TRANSFERING_CONTENT_POPUP, true);
-            //       } else {
-            //         this.revertSelectedStorageDestination();
-            //       }
-            //     });
+            this.permissionsService.requestPermission(AndroidPermission.WRITE_EXTERNAL_STORAGE)
+                .subscribe(async (status: AndroidPermissionsStatus) => {
+                  if (status.hasPermission) {
+                    await this.showShouldTransferContentsPopup();
+                  } else if (status.isPermissionAlwaysDenied) {
+                    this.revertSelectedStorageDestination();
+                    await this.commonUtilService.showSettingsPageToast
+                    ('FILE_MANAGER_PERMISSION_DESCRIPTION', this.appName, PageId.TRANSFERING_CONTENT_POPUP, true);
+                  } else {
+                    this.revertSelectedStorageDestination();
+                  }
+                });
           }
         }, this.appName, this.commonUtilService.translateMessage('FILE_MANAGER'),
         'FILE_MANAGER_PERMISSION_DESCRIPTION', PageId.TRANSFERING_CONTENT_POPUP, true

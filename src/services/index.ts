@@ -9,7 +9,7 @@ export { ContainerService } from './container.services';
 export { UtilityService } from './utility-service';
 export { AppHeaderService } from './app-header.service';
 export { AppRatingService } from './app-rating.service';
-// export { AndroidPermissionsService } from './android-permissions/android-permissions.service';
+export { AndroidPermissionsService } from './android-permissions/android-permissions.service';
 export { NotificationService } from './notification.service';
 export { ComingSoonMessageService } from './coming-soon-message.service';
 export { SunbirdQRScanner } from './sunbirdqrscanner.service';

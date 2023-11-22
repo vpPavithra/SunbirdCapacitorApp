@@ -132,7 +132,6 @@ import { DownloadTranscriptPopupComponent } from './popups/download-transcript-p
         AccessDiscussionComponent,
         ShowVendorAppsComponent,
         JoyfulThemePopupComponent,
-        JoyfulThemePopupComponent,
         NewExperiencePopupComponent,
         YearOfBirthPopupComponent,
         ContentViewerComponent,
@@ -222,11 +221,7 @@ import { DownloadTranscriptPopupComponent } from './popups/download-transcript-p
         CertificateVerificationPopoverComponent,
         DownloadTranscriptPopupComponent
     ],
-    providers: [
-        FileSizePipe, 
-        FilterPipe, 
-        ContentShareHandlerService
-    ],
+    providers: [FileSizePipe, FilterPipe, ContentShareHandlerService],
     schemas: [
         CUSTOM_ELEMENTS_SCHEMA
     ]

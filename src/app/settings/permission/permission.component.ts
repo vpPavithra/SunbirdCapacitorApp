@@ -2,8 +2,8 @@ import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import { RouterLinks } from '../../../app/app.constant';
-// import { AndroidPermission, AndroidPermissionsStatus, PermissionAskedEnum } from '../../../services/android-permissions/android-permission';
-// import { AndroidPermissionsService } from '../../../services/android-permissions/android-permissions.service';
+import { AndroidPermission, AndroidPermissionsStatus, PermissionAskedEnum } from '../../../services/android-permissions/android-permission';
+import { AndroidPermissionsService } from '../../../services/android-permissions/android-permissions.service';
 import { AppGlobalService } from '../../../services/app-global-service.service';
 import { AppHeaderService } from '../../../services/app-header.service';
 import { CommonUtilService } from '../../../services/common-util.service';
@@ -15,7 +15,6 @@ import { Platform } from '@ionic/angular';
 import { Events } from '../../../util/events';
 import { of, Subscription } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
-import { Filesystem } from '@capacitor/filesystem';
 
 declare const window;
 
@@ -30,11 +29,11 @@ export class PermissionComponent implements OnInit {
 
   permissionListDetails: any;
 
-  // readonly permissionList = [
-  //   AndroidPermission.CAMERA,
-  //   AndroidPermission.WRITE_EXTERNAL_STORAGE,
-  //   AndroidPermission.RECORD_AUDIO
-  // ];
+  readonly permissionList = [
+    AndroidPermission.CAMERA,
+    AndroidPermission.WRITE_EXTERNAL_STORAGE,
+    AndroidPermission.RECORD_AUDIO
+  ];
 
   changePermissionAccess = false;
   showProfileSettingPage = false;
@@ -46,7 +45,7 @@ export class PermissionComponent implements OnInit {
   constructor(
     public commonUtilService: CommonUtilService,
     private scannerService: SunbirdQRScanner,
-    // private permission: AndroidPermissionsService,
+    private permission: AndroidPermissionsService,
     private appGlobalService: AppGlobalService,
     private headerService: AppHeaderService,
     private event: Events,
@@ -91,16 +90,11 @@ export class PermissionComponent implements OnInit {
   }
 
   async ionViewWillEnter() {
-    // this.permission.checkPermissions(this.permissionList).subscribe((res: { [key: string]: AndroidPermissionsStatus }) => {
-    //   this.permissionListDetails[0].permission = res[AndroidPermission.CAMERA].hasPermission;
-    //   this.permissionListDetails[1].permission = res[AndroidPermission.WRITE_EXTERNAL_STORAGE].hasPermission;
-    //   this.permissionListDetails[2].permission = res[AndroidPermission.RECORD_AUDIO].hasPermission;
-    // });
-    Filesystem.checkPermissions().then(res => {
-      if (res.publicStorage !== 'granted') {
-        Filesystem.requestPermissions();
-      }
-    })
+    this.permission.checkPermissions(this.permissionList).subscribe((res: { [key: string]: AndroidPermissionsStatus }) => {
+      this.permissionListDetails[0].permission = res[AndroidPermission.CAMERA].hasPermission;
+      this.permissionListDetails[1].permission = res[AndroidPermission.WRITE_EXTERNAL_STORAGE].hasPermission;
+      this.permissionListDetails[2].permission = res[AndroidPermission.RECORD_AUDIO].hasPermission;
+    });
     if (this.navParams) {
       this.changePermissionAccess = Boolean(this.navParams.changePermissionAccess);
       this.showProfileSettingPage = Boolean(this.navParams.showProfileSettingPage);
@@ -144,9 +138,9 @@ export class PermissionComponent implements OnInit {
   }
 
   grantAccess() {
-    // this.appGlobalService.setIsPermissionAsked(PermissionAskedEnum.isCameraAsked, true);
-    // this.appGlobalService.setIsPermissionAsked(PermissionAskedEnum.isRecordAudioAsked, true);
-    // this.appGlobalService.setIsPermissionAsked(PermissionAskedEnum.isStorageAsked, true);
+    this.appGlobalService.setIsPermissionAsked(PermissionAskedEnum.isCameraAsked, true);
+    this.appGlobalService.setIsPermissionAsked(PermissionAskedEnum.isRecordAudioAsked, true);
+    this.appGlobalService.setIsPermissionAsked(PermissionAskedEnum.isStorageAsked, true);
     this.generateInteractEvent(true);
     // If user given camera access and the showScannerPage is ON
     this.requestAppPermissions().then(async (status) => {
@@ -173,33 +167,33 @@ export class PermissionComponent implements OnInit {
   }
 
   private async requestAppPermissions() {
-    // return this.permission.checkPermissions(this.permissionList).pipe(
-    //   mergeMap((statusMap: { [key: string]: AndroidPermissionsStatus }) => {
-    //     const toRequest: AndroidPermission[] = [];
+    return this.permission.checkPermissions(this.permissionList).pipe(
+      mergeMap((statusMap: { [key: string]: AndroidPermissionsStatus }) => {
+        const toRequest: AndroidPermission[] = [];
 
-    //     for (const permission in statusMap) {
-    //       if (!statusMap[permission].hasPermission) {
-    //         const values = new Map();
-    //         values['permission'] = permission;
-    //         values['permissionStatus'] = statusMap[permission];
-    //         this.telemetryGeneratorService.generateInteractTelemetry(
-    //           InteractType.OTHER,
-    //           InteractSubtype.PERMISSION_POPUP,
-    //           Environment.HOME,
-    //           PageId.ONBOARDING_LANGUAGE_SETTING,
-    //           undefined,
-    //           values
-    //         );
-    //         toRequest.push(permission as AndroidPermission);
-    //       }
-    //     }
+        for (const permission in statusMap) {
+          if (!statusMap[permission].hasPermission) {
+            const values = new Map();
+            values['permission'] = permission;
+            values['permissionStatus'] = statusMap[permission];
+            this.telemetryGeneratorService.generateInteractTelemetry(
+              InteractType.OTHER,
+              InteractSubtype.PERMISSION_POPUP,
+              Environment.HOME,
+              PageId.ONBOARDING_LANGUAGE_SETTING,
+              undefined,
+              values
+            );
+            toRequest.push(permission as AndroidPermission);
+          }
+        }
 
-    //     if (!toRequest.length) {
-    //       return of(undefined);
-    //     }
-    //     return this.permission.requestPermissions(toRequest);
-    //   })
-    // ).toPromise();
+        if (!toRequest.length) {
+          return of(undefined);
+        }
+        return this.permission.requestPermissions(toRequest);
+      })
+    ).toPromise();
   }
 
   handleHeaderEvents($event) {

@@ -62,7 +62,6 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 // import { DiscoverComponent } from '../components/discover/discover.page';
 import { OnTabViewWillEnter } from './../tabs/on-tab-view-will-enter';
 import { Keyboard } from '@capacitor/keyboard';
-import { Directory } from '@capacitor/filesystem';
 
 declare const window;
 @Component({
@@ -1586,7 +1585,7 @@ export class SearchPage implements OnInit, AfterViewInit, OnDestroy, OnTabViewWi
    */
   getImportContentRequestBody(identifiers: Array<string>, isChild: boolean): Array<ContentImport> {
     const requestParams = [];
-    const folderPath = this.platform.is('ios') ? Directory.Documents : Directory.Data;
+    const folderPath = this.platform.is('ios') ? window.cordova.file.documentsDirectory : window.cordova.file.dataDirectory;
     identifiers.forEach((value) => {
       requestParams.push({
         isChildContent: isChild,

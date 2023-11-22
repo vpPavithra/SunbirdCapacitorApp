@@ -64,8 +64,8 @@ import { FormConstants } from '../../app/form.constants';
 import {UpdateProfileService} from '../../services/update-profile-service';
 import {LoginNavigationHandlerService} from '../../services/login-navigation-handler.service';
 import { Platform } from '@ionic/angular';
-import { Directory } from '@capacitor/filesystem';
 
+declare var window;
 @Injectable()
 export class SplaschreenDeeplinkActionHandlerDelegate implements SplashscreenActionHandlerDelegate {
   private savedPayloadUrl: any;
@@ -938,7 +938,7 @@ private async upgradeAppPopover(requiredVersionCode) {
   private getImportContentRequestBody(identifiers: Array<string>, isChild: boolean): Array<ContentImport> {
     const rollUpMap: { [key: string]: Rollup } = {};
     const requestParams: ContentImport[] = [];
-    const folderPath = this.platform.is('ios') ? Directory.Documents : Directory.Data;
+    const folderPath = this.platform.is('ios') ? window.cordova.file.documentsDirectory : window.cordova.file.externalDataDirectory;
        
     identifiers.forEach((value) => {
       requestParams.push({

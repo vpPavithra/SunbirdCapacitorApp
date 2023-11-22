@@ -15,7 +15,7 @@ import {
     OAuthSession, Profile, ProfileService, ProfileSession, ProfileType, SharedPreferences
 } from '@project-sunbird/sunbird-sdk';
 import { GenericAppConfig, PreferenceKey, ProfileConstants } from '../app/app.constant';
-// import { PermissionAsked } from './android-permissions/android-permission';
+import { PermissionAsked } from './android-permissions/android-permission';
 import { Environment, ID, InteractSubtype, InteractType, PageId } from './telemetry-constants';
 import { TelemetryGeneratorService } from './telemetry-generator.service';
 import { UtilityService } from './utility-service';
@@ -72,11 +72,11 @@ export class AppGlobalService implements OnDestroy {
     isOnBoardingCompleted = false;
     selectedUser;
     selectedBoardMediumGrade: string;
-    // isPermissionAsked: PermissionAsked = {
-    //     isCameraAsked: false,
-    //     isStorageAsked: false,
-    //     isRecordAudioAsked: false,
-    // };
+    isPermissionAsked: PermissionAsked = {
+        isCameraAsked: false,
+        isStorageAsked: false,
+        isRecordAudioAsked: false,
+    };
     private _limitedShareQuizContent: any;
     private _isSignInOnboardingCompleted: any;
     private isJoinTraningOnboarding: any;
@@ -593,8 +593,8 @@ export class AppGlobalService implements OnDestroy {
         this.preferences.getString(PreferenceKey.APP_PERMISSION_ASKED).subscribe(
             async (permissionAsked: string | undefined) => {
                 if (!permissionAsked) {
-                    // await this.preferences.putString(
-                    //     PreferenceKey.APP_PERMISSION_ASKED, JSON.stringify(this.isPermissionAsked)).toPromise().then();
+                    await this.preferences.putString(
+                        PreferenceKey.APP_PERMISSION_ASKED, JSON.stringify(this.isPermissionAsked)).toPromise().then();
                     return;
                 } else {
                     permissionAsked = JSON.parse(permissionAsked);

@@ -21,6 +21,7 @@ import { CsPrimaryCategory } from '@project-sunbird/client-services/services/con
 import { ContentUtil } from '../../../util/content-util';
 import { CategoryKeyTranslator } from '../../../pipes/category-key-translator/category-key-translator-pipe';
 import { NavigationService } from '../../../services/navigation-handler.service';
+import dayjs from 'dayjs';
 declare const window: any;
 @Component({
     selector: 'app-enrollment-details',
@@ -60,7 +61,7 @@ export class EnrollmentDetailsComponent implements OnInit {
         this.ongoingBatches = this.navParams.get('ongoingBatches');
         this.upcommingBatches = this.navParams.get('upcommingBatches');
         this.retiredBatched = this.navParams.get('retiredBatched');
-        this.todayDate = window.dayjs().format('YYYY-MM-DD');
+        this.todayDate = dayjs().format('YYYY-MM-DD');
         this.content = this.navParams.get('content');
         this.courseId = this.content.identifier;
     }

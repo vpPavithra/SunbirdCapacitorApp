@@ -1,17 +1,17 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ShareItemType, ShareMode } from '../../../../app/app.constant';
 import { Environment, ID, ImpressionType, InteractSubtype, InteractType, PageId } from '../../../../services/telemetry-constants';
-// import { AndroidPermission, AndroidPermissionsStatus } from '../../../../services/android-permissions/android-permission';
+import { AndroidPermission, AndroidPermissionsStatus } from '../../../../services/android-permissions/android-permission';
 import { CommonUtilService } from '../../../../services/common-util.service';
 import { TelemetryGeneratorService } from '../../../../services/telemetry-generator.service';
 import { App } from '@capacitor/app';
 import { Share } from '@capacitor/share';
 import { NavParams, Platform, PopoverController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
-// import { AndroidPermissionsService } from '../../../../services/android-permissions/android-permissions.service';
+import { AndroidPermissionsService } from '../../../../services/android-permissions/android-permissions.service';
 import { UtilityService } from '../../../../services/utility-service';
-import { Directory } from '@capacitor/filesystem';
 
+declare var window;
 @Component({
   selector: 'app-sb-share-popup',
   templateUrl: './sb-app-share-popup.component.html',
@@ -47,7 +47,7 @@ export class SbAppSharePopupComponent implements OnInit, OnDestroy {
     private utilityService: UtilityService,
     private navParams: NavParams,
     private telemetryGeneratorService: TelemetryGeneratorService,
-    // private permissionService: AndroidPermissionsService,
+    private permissionService: AndroidPermissionsService,
     private commonUtilService: CommonUtilService) {
     this.pageId = this.navParams.get('pageId');
   }
@@ -173,7 +173,7 @@ export class SbAppSharePopupComponent implements OnInit, OnDestroy {
   async exportApk(shareParams): Promise<void> {
     let destination = '';
     if (shareParams.saveFile) {
-      const folderPath = this.platform.is('ios') ? Directory.Documents : Directory.External
+      const folderPath = this.platform.is('ios') ? window.cordova.file.documentsDirectory: window.cordova.file.dataDirectory
       destination = folderPath + 'Download/';
     }
     const loader = await this.commonUtilService.getLoader();
@@ -198,21 +198,21 @@ export class SbAppSharePopupComponent implements OnInit, OnDestroy {
       });
     }
     return new Promise<boolean | undefined>(async (resolve, reject) => {
-      // const permissionStatus = await this.commonUtilService.getGivenPermissionStatus(AndroidPermission.WRITE_EXTERNAL_STORAGE );
-      // if (permissionStatus.hasPermission) {
-      //   resolve(true);
-      // } else if (permissionStatus.isPermissionAlwaysDenied) {
-      //   await this.commonUtilService.showSettingsPageToast('FILE_MANAGER_PERMISSION_DESCRIPTION', this.appName, this.pageId, true);
-      //   resolve(false);
-      // } else {
-      //   this.showStoragePermissionPopup().then((result) => {
-      //     if (result) {
-      //       resolve(true);
-      //     } else {
-      //       resolve(false);
-      //     }
-      //   }).catch(err => console.error(err));
-      // }
+      const permissionStatus = await this.commonUtilService.getGivenPermissionStatus(AndroidPermission.WRITE_EXTERNAL_STORAGE );
+      if (permissionStatus.hasPermission) {
+        resolve(true);
+      } else if (permissionStatus.isPermissionAlwaysDenied) {
+        await this.commonUtilService.showSettingsPageToast('FILE_MANAGER_PERMISSION_DESCRIPTION', this.appName, this.pageId, true);
+        resolve(false);
+      } else {
+        this.showStoragePermissionPopup().then((result) => {
+          if (result) {
+            resolve(true);
+          } else {
+            resolve(false);
+          }
+        }).catch(err => console.error(err));
+      }
     });
   }
   private async showStoragePermissionPopup(): Promise<boolean | undefined> {

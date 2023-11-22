@@ -73,9 +73,9 @@ import { EnrollmentDetailsComponent } from '../components/enrollment-details/enr
 import { TagPrefixConstants } from '../../services/segmentation-tag/segmentation-tag.service';
 import { AccessDiscussionComponent } from '../../app/components/access-discussion/access-discussion.component';
 import { buildConfig } from '../../environments/environment.stag';
-// import { ActivityData } from '../my-groups/group.interface';
+import { ActivityData } from '../my-groups/group.interface';
 import dayjs from 'dayjs';
-import { Directory } from '@capacitor/filesystem';
+// import { Directory } from '@capacitor/filesystem';
 declare const window: any;
 
 @Component({
@@ -246,7 +246,7 @@ export class EnrolledCourseDetailsPage implements OnInit, OnDestroy, ConsentPopo
   batchRemaningTime: any;
   private batchRemaningTimingIntervalRef?: any;
   isMinor: boolean;
-  // activityData: ActivityData;
+  activityData: ActivityData;
   showCertificateDetails= false;
   certificateDetails: any;
   isCourseMentor = false;
@@ -307,7 +307,7 @@ export class EnrolledCourseDetailsPage implements OnInit, OnDestroy, ConsentPopo
       this.isQrCodeLinkToContent = extrasState.isQrCodeLinkToContent;
       this.resumeCourseFlag = extrasState.resumeCourseFlag || false;
       this.skipCheckRetiredOpenBatch = extrasState.skipCheckRetiredOpenBatch;
-      // this.activityData = extrasState.activityData || undefined;
+      this.activityData = extrasState.activityData || undefined;
       this.pageId = this.commonUtilService.appendTypeToPrimaryCategory(this.courseCardData) || this.pageId;
     }
   }
@@ -1000,7 +1000,7 @@ export class EnrolledCourseDetailsPage implements OnInit, OnDestroy, ConsentPopo
    */
   getImportContentRequestBody(identifiers, isChild: boolean): Array<ContentImport> {
     const requestParams = [];
-    const folderPath = this.platform.is('ios') ? Directory.Documents : Directory.Data;
+    const folderPath = this.platform.is('ios') ? window.cordova.file.documentsDirectory : window.cordova.file.dataDirectory;
     identifiers.forEach((value) => {
       requestParams.push({
         isChildContent: isChild,
@@ -2588,15 +2588,15 @@ export class EnrolledCourseDetailsPage implements OnInit, OnDestroy, ConsentPopo
   }
 
   async navigateToDashboard(){
-    // await this.router.navigate([`/${RouterLinks.MY_GROUPS}/${RouterLinks.ACTIVITY_DETAILS}/${RouterLinks.ACTIVITY_DASHBOARD}`],
-    // {
-    //   state: {
-    //     hierarchyData: this.courseHeirarchy,
-    //     activity: this.activityData && this.activityData.activity,
-    //     group: this.activityData && this.activityData.group,
-    //     loggedinUser: this.userId
-    //   }
-    // });
+    await this.router.navigate([`/${RouterLinks.MY_GROUPS}/${RouterLinks.ACTIVITY_DETAILS}/${RouterLinks.ACTIVITY_DASHBOARD}`],
+    {
+      state: {
+        hierarchyData: this.courseHeirarchy,
+        activity: this.activityData && this.activityData.activity,
+        group: this.activityData && this.activityData.group,
+        loggedinUser: this.userId
+      }
+    });
   }
 
   markContent() {
